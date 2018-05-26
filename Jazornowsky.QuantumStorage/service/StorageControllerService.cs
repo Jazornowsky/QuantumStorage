@@ -81,7 +81,7 @@ namespace Jazornowsky.QuantumStorage.service
                     continue;
                 }
                 connectedStorage.AddItem(ref item);
-                if (item.GetAmount() == 0)
+                if (item == null || item.GetAmount() == 0)
                 {
                     break;
                 }

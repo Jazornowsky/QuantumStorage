@@ -57,10 +57,10 @@ namespace Jazornowsky.QuantumStorage
             {
                 int line = items.Count() / 5;
                 int column = items.Count() % 5;
-                this.manager.AddIcon("iconItem" + items.GetItemCount(), "empty", Color.white, column * itemWidth + 10,
+                this.manager.AddIcon("iconItem" + items.Count, "empty", Color.white, column * itemWidth + 10,
                     line * itemHeight + itemRowStart + 10);
                 this.manager.AddLabel(GenericMachineManager.LabelType.OneLineHalfWidth,
-                    "labelItem" + items.GetItemCount(),
+                    "labelItem" + items.Count,
                     string.Empty, Color.white, false, column * itemWidth + 28, line * itemHeight + itemRowStart + 17);
             }
             Dirty = true;
@@ -117,7 +117,7 @@ namespace Jazornowsky.QuantumStorage
                 }
                 else
                 {
-                    this.manager.UpdateIcon("iconItem" + items.GetItemCount(), "empty", Color.white);
+                    this.manager.UpdateIcon("iconItem" + items.Count, "empty", Color.white);
                 }
 
                 ItemBase itemBase = items[index];
@@ -172,27 +172,27 @@ namespace Jazornowsky.QuantumStorage
             if (player == WorldScript.mLocalPlayer &&
                 !WorldScript.mLocalPlayer.mInventory.RemoveItemByExample(itemToStore, true))
             {
-                Debug.Log((object) ("Player " + player.mUserName + " doesnt have " + (object) itemToStore));
+                Debug.Log(("Player " + player.mUserName + " doesnt have " + itemToStore));
                 return;
             }
 
             quantumStorageController.AddItem(ref itemToStore);
 
-            if (itemToStore.GetAmount() > 0)
+            if (itemToStore != null && itemToStore.GetAmount() > 0)
             {
-                Debug.LogWarning(
-                    (object)
-                    "Bad thing that used to be unhandled! Thread interaccess probably caused this to screw up!");
+                Debug.LogWarning("Bad thing that used to be unhandled! Thread interaccess probably caused this to screw up!");
                 if (player == WorldScript.mLocalPlayer)
                 {
                     WorldScript.mLocalPlayer.mInventory.AddItem(itemToStore);
                 }
             }
 
-            player.mInventory.MarkEverythingDirty();
-
             if (player == WorldScript.mLocalPlayer)
             {
+                player.mInventory.MarkEverythingDirty();
+                quantumStorageController.Dirty = true;
+                UIManager.ForceNGUIUpdate = 0.1f;
+                AudioHUDManager.instance.OrePickup();
                 NetworkManager.instance.SendInterfaceCommand(QuantumStorageMod.QuantumStorageControllerWindowKey,
                     "StoreItem",
                     null, itemToStoreCopy, quantumStorageController, 0.0f);
