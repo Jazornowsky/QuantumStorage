@@ -1,0 +1,15 @@
+D:\Workspace\FORTRESSCRAFT MODS\QUANTUM STORAGE\Jazornowsky.QuantumStorage\bin\Debug\plugin_Jazornowsky.QuantumStorage.dll
+D:\Workspace\FORTRESSCRAFT MODS\QUANTUM STORAGE\Jazornowsky.QuantumStorage\bin\Debug\plugin_Jazornowsky.QuantumStorage.pdb
+D:\Workspace\FORTRESSCRAFT MODS\QUANTUM STORAGE\Jazornowsky.QuantumStorage\bin\Debug\Assembly-CSharp.dll
+D:\Workspace\FORTRESSCRAFT MODS\QUANTUM STORAGE\Jazornowsky.QuantumStorage\bin\Debug\UnityEngine.dll
+D:\Workspace\FORTRESSCRAFT MODS\QUANTUM STORAGE\Jazornowsky.QuantumStorage\bin\Debug\UnityEngine.UI.dll
+D:\Workspace\FORTRESSCRAFT MODS\QUANTUM STORAGE\Jazornowsky.QuantumStorage\bin\Debug\Assembly-CSharp-firstpass.dll
+D:\Workspace\FORTRESSCRAFT MODS\QUANTUM STORAGE\Jazornowsky.QuantumStorage\bin\Debug\Ionic.Zip.dll
+D:\Workspace\FORTRESSCRAFT MODS\QUANTUM STORAGE\Jazornowsky.QuantumStorage\bin\Debug\Assembly-UnityScript-firstpass.dll
+D:\Workspace\FORTRESSCRAFT MODS\QUANTUM STORAGE\Jazornowsky.QuantumStorage\bin\Debug\Boo.Lang.dll
+D:\Workspace\FORTRESSCRAFT MODS\QUANTUM STORAGE\Jazornowsky.QuantumStorage\bin\Debug\UnityScript.Lang.dll
+D:\Workspace\FORTRESSCRAFT MODS\QUANTUM STORAGE\Jazornowsky.QuantumStorage\obj\Debug\Jazornowsky.QuantumStorage.csproj.CoreCompileInputs.cache
+D:\Workspace\FORTRESSCRAFT MODS\QUANTUM STORAGE\Jazornowsky.QuantumStorage\obj\Debug\Jazornowsky.QuantumStorage.csproj.CopyComplete
+D:\Workspace\FORTRESSCRAFT MODS\QUANTUM STORAGE\Jazornowsky.QuantumStorage\obj\Debug\plugin_Jazornowsky.QuantumStorage.dll
+D:\Workspace\FORTRESSCRAFT MODS\QUANTUM STORAGE\Jazornowsky.QuantumStorage\obj\Debug\plugin_Jazornowsky.QuantumStorage.pdb
+D:\Workspace\FORTRESSCRAFT MODS\QUANTUM STORAGE\Jazornowsky.QuantumStorage\obj\Debug\Jazornowsky.QuantumStorage.csprojAssemblyReference.cache
