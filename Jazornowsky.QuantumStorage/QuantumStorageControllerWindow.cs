@@ -157,6 +157,7 @@ namespace Jazornowsky.QuantumStorage
             }
 
             StoreItem(WorldScript.mLocalPlayer, quantumStorageController, itemToStore);
+            AudioHUDManager.instance.OrePickup();
             WorldScript.mLocalPlayer.mInventory.VerifySuitUpgrades();
             WorldScript.mLocalPlayer.mInventory.MarkEverythingDirty();
             InventoryPanelScript.MarkDirty();
@@ -168,6 +169,7 @@ namespace Jazornowsky.QuantumStorage
         public static void StoreItem(Player player, QuantumStorageControllerMachine quantumStorageController,
             ItemBase itemToStore)
         {
+            LogUtils.LogDebug(LogName, "StoreItem");
             var itemToStoreCopy = itemToStore.NewInstance();
             if (player == WorldScript.mLocalPlayer &&
                 !WorldScript.mLocalPlayer.mInventory.RemoveItemByExample(itemToStore, true))
@@ -177,6 +179,7 @@ namespace Jazornowsky.QuantumStorage
             }
 
             quantumStorageController.AddItem(ref itemToStore);
+            quantumStorageController.Dirty = true;
 
             if (itemToStore != null && itemToStore.GetAmount() > 0)
             {
@@ -187,12 +190,13 @@ namespace Jazornowsky.QuantumStorage
                 }
             }
 
-            if (player == WorldScript.mLocalPlayer)
+            LogUtils.LogDebug(LogName, "WorldScript.mLocalPlayer.mUserID: " + WorldScript.mLocalPlayer.mUserID);
+            LogUtils.LogDebug(LogName, "WorldScript.mLocalPlayer.mnID: " + WorldScript.mLocalPlayer.mnID);
+            LogUtils.LogDebug(LogName, "player.mUserID: " + player.mUserID);
+            LogUtils.LogDebug(LogName, "player.mnID: " + player.mnID);
+            if (!WorldScript.mbIsServer)
             {
-                player.mInventory.MarkEverythingDirty();
-                quantumStorageController.Dirty = true;
-                UIManager.ForceNGUIUpdate = 0.1f;
-                AudioHUDManager.instance.OrePickup();
+                LogUtils.LogDebug(LogName, "StoreItem - SendInterfaceCommand");
                 NetworkManager.instance.SendInterfaceCommand(QuantumStorageMod.QuantumStorageControllerWindowKey,
                     "StoreItem",
                     null, itemToStoreCopy, quantumStorageController, 0.0f);
@@ -227,7 +231,12 @@ namespace Jazornowsky.QuantumStorage
                         amount = ItemManager.GetCurrentStackSize(itemBase);
                     }
 
-                    return TakeItem(WorldScript.mLocalPlayer, quantumStorageController, itemBase);
+                    if (TakeItem(WorldScript.mLocalPlayer, quantumStorageController, itemBase))
+                    {
+                        UIManager.ForceNGUIUpdate = 0.1f;
+                        AudioHUDManager.instance.OrePickup();
+                        return true;
+                    }
                 }
             }
 
@@ -261,10 +270,8 @@ namespace Jazornowsky.QuantumStorage
             }
 
             quantumStorageController.Dirty = true;
-            UIManager.ForceNGUIUpdate = 0.1f;
-            AudioHUDManager.instance.OrePickup();
 
-            if (player == WorldScript.mLocalPlayer)
+            if (!WorldScript.mbIsServer)
             {
                 NetworkManager.instance.SendInterfaceCommand(QuantumStorageMod.QuantumStorageControllerWindowKey,
                     "TakeItem",

@@ -103,12 +103,14 @@ namespace Jazornowsky.QuantumStorage
         public ItemBase TakeItem(ItemBase item)
         {
             ItemBase newItemInstance = ItemBaseUtils.RemoveListItem(item, ref _items);
+            RequestImmediateNetworkUpdate();
             return newItemInstance;
         }
 
         public void AddItem(ref ItemBase item)
         {
             item = item.AddListItem(ref _items, false, _maxCapacity);
+            RequestImmediateNetworkUpdate();
         }
 
         public override string GetPopupText()
@@ -144,6 +146,25 @@ namespace Jazornowsky.QuantumStorage
             }
         }
 
+        public override void ReadNetworkUpdate(BinaryReader reader)
+        {
+            int itemCount = reader.ReadInt32();
+            _items = new List<ItemBase>();
+            for (int index = 0; index < itemCount; index++)
+            {
+                _items.Add(ItemFile.DeserialiseItem(reader));
+            }
+        }
+
+        public override void WriteNetworkUpdate(BinaryWriter writer)
+        {
+            writer.Write(_items.Count);
+            foreach (var item in _items)
+            {
+                ItemFile.SerialiseItem(item, writer);
+            }
+        }
+
         public void InitStorageBars()
         {
             if (mWrapper?.mGameObjectList?.Count == null)
@@ -176,6 +197,11 @@ namespace Jazornowsky.QuantumStorage
             }
 
             _storageBarsInitialised = true;
+        }
+
+        public override bool ShouldNetworkUpdate()
+        {
+            return true;
         }
 
         public void InitSphere()
