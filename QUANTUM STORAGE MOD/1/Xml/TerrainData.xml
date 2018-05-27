@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfTerrainDataEntry xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<TerrainDataEntry>
+		<Key>Jazornowsky.QuantumStorageController</Key><!-- Not used, this is a Value'd machine-->
+		<Name>Quantum Storage Controller</Name>
+		<Description></Description>
+		<LayerType>PrimaryTerrain</LayerType>
+		<TopTexture>192</TopTexture>
+		<SideTexture>192</SideTexture>
+		<BottomTexture>192</BottomTexture>
+		<GUITexture>192</GUITexture>
+		<isSolid>false</isSolid>
+		<isTransparent>false</isTransparent>
+		<isHollow>false</isHollow>
+		<isGlass>false</isGlass>
+		<isPassable>false</isPassable>
+		<hasObject>true</hasObject>
+		<hasEntity>true</hasEntity>
+		<Category>Machine</Category>
+		<AudioWalkType>Wood</AudioWalkType>
+		<AudioBuildType>Dirt</AudioBuildType>
+		<AudioDestroyType>None</AudioDestroyType>
+		<tags>
+			<tag>Machinery</tag>
+		</tags>
+		<Values>
+			<ValueEntry>
+				<Key>Jazornowsky.QuantumStorageControllerBlock</Key>
+				<Name>Quantum Storage Controller</Name>
+				<IconName>Jazornowsky.QuantumStorageController</IconName>
+				<Description>Controller for Quantum Storage System (QSS).</Description>
+			</ValueEntry>
+		</Values>
+	</TerrainDataEntry>
+	
+	<TerrainDataEntry>
+		<Key>Jazornowsky.QuantumOutputPort</Key><!-- Not used, this is a Value'd machine-->
+		<Name>Quantum Output Port</Name>
+		<Description></Description>
+		<LayerType>PrimaryTerrain</LayerType>
+		<TopTexture>182</TopTexture>
+		<SideTexture>182</SideTexture>
+		<BottomTexture>182</BottomTexture>
+		<GUITexture>182</GUITexture>
+		<isSolid>false</isSolid>
+		<isTransparent>false</isTransparent>
+		<isHollow>false</isHollow>
+		<isGlass>false</isGlass>
+		<isPassable>false</isPassable>
+		<hasObject>true</hasObject>
+		<hasEntity>true</hasEntity>
+		<Category>Machine</Category>
+		<AudioWalkType>Wood</AudioWalkType>
+		<AudioBuildType>Dirt</AudioBuildType>
+		<AudioDestroyType>None</AudioDestroyType>
+		<tags>
+			<tag>Machinery</tag>
+		</tags>
+		<Values>
+			<ValueEntry>
+				<Key>Jazornowsky.QuantumOutputPortBlock</Key>
+				<Name>Quantum Output Port Block</Name>
+				<IconName>Jazornowsky.QuantumOutputPort</IconName>
+				<Description>Removes the specified type of item from the Quantum Storage System.</Description>
+			</ValueEntry>
+		</Values>
+	</TerrainDataEntry>
+	
+	<TerrainDataEntry>
+		<Key>Jazornowsky.QuantumInputPort</Key><!-- Not used, this is a Value'd machine-->
+		<Name>Quantum Input Port</Name>
+		<Description></Description>
+		<LayerType>PrimaryTerrain</LayerType>
+		<TopTexture>182</TopTexture>
+		<SideTexture>182</SideTexture>
+		<BottomTexture>182</BottomTexture>
+		<GUITexture>182</GUITexture>
+		<isSolid>false</isSolid>
+		<isTransparent>false</isTransparent>
+		<isHollow>false</isHollow>
+		<isGlass>false</isGlass>
+		<isPassable>false</isPassable>
+		<hasObject>true</hasObject>
+		<hasEntity>true</hasEntity>
+		<Category>Machine</Category>
+		<AudioWalkType>Wood</AudioWalkType>
+		<AudioBuildType>Dirt</AudioBuildType>
+		<AudioDestroyType>None</AudioDestroyType>
+		<tags>
+			<tag>Machinery</tag>
+		</tags>
+		<Values>
+			<ValueEntry>
+				<Key>Jazornowsky.QuantumInputPortBlock</Key>
+				<Name>Quantum Input Port Block</Name>
+				<IconName>Jazornowsky.QuantumInputPort</IconName>
+				<Description>Inserts items into the Quantum Storage System.</Description>
+			</ValueEntry>
+		</Values>
+	</TerrainDataEntry>
+	
+	<TerrainDataEntry>
+		<Key>Jazornowsky.QuantumStorage</Key><!-- Not used, this is a Value'd machine-->
+		<Name>Quantum Storage</Name>
+		<Description></Description>
+		<LayerType>PrimaryTerrain</LayerType>
+		<TopTexture>143</TopTexture>
+		<SideTexture>145</SideTexture>
+		<BottomTexture>145</BottomTexture>
+		<GUITexture>145</GUITexture>
+		<isSolid>false</isSolid>
+		<isTransparent>true</isTransparent>
+		<isHollow>false</isHollow>
+		<isGlass>false</isGlass>
+		<isPassable>false</isPassable>
+		<hasObject>true</hasObject>
+		<hasEntity>true</hasEntity>
+		<Category>Machine</Category>
+		<AudioWalkType>Wood</AudioWalkType>
+		<AudioBuildType>Dirt</AudioBuildType>
+		<AudioDestroyType>None</AudioDestroyType>
+		<tags>
+			<tag>Machinery</tag>
+		</tags>
+		<Values>
+			<ValueEntry>
+				<Key>Jazornowsky.QuantumStorage1kBlock</Key>
+				<Name>Quantum Storage 1k</Name>
+				<IconName>Jazornowsky.QuantumStorage1k</IconName>
+				<Description>
+					Storage for Quantum Storage System (QSS).
+					Can Hold up to 1k items.
+				</Description>
+			</ValueEntry>
+			<ValueEntry>
+				<Key>Jazornowsky.QuantumStorage2kBlock</Key>
+				<Name>Quantum Storage 2k</Name>
+				<IconName>Jazornowsky.QuantumStorage2k</IconName>
+				<Description>
+					Storage for Quantum Storage System (QSS).
+					Can Hold up to 2k items.
+				</Description>
+			</ValueEntry>
+			<ValueEntry>
+				<Key>Jazornowsky.QuantumStorage4kBlock</Key>
+				<Name>Quantum Storage 4k</Name>
+				<IconName>Jazornowsky.QuantumStorage4k</IconName>
+				<Description>
+					Storage for Quantum Storage System (QSS).
+					Can Hold up to 4k items.
+				</Description>
+			</ValueEntry>
+		</Values>
+	</TerrainDataEntry>
+	
+	<TerrainDataEntry>
+		<Key>GenericAssemblerMachine</Key>
+		<IsOverride>true</IsOverride>
+		<Values>
+			<ValueEntry>
+				<Key>Jazornowsky.QuantumDataUnitAssembler</Key>
+				<Name>Quantum Data Unit Assembler</Name>
+				<IconName>Jazornowsky.QuantumDataUnitAssembler</IconName>
+				<Description>Assembles Quantum Data Unit.</Description>
+			</ValueEntry>
+		</Values>
+	</TerrainDataEntry>
+</ArrayOfTerrainDataEntry>

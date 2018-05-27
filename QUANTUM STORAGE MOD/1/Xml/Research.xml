@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfResearchDataEntry xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<ResearchDataEntry>
+		<Key>Jazornowsky.QuantumStorageResearch</Key>
+		<Name>Quantum Storage</Name>
+		<IconName>Jazornowsky.QuantumStorage</IconName>
+		<PreDescription>Pinnacle of storage engineering.</PreDescription>
+		<PostDescription>Most advanced storage sollutions, yet.</PostDescription>
+		<!-- <ResearchRequirements> -->
+			<!-- <Research>T4 assist machines</Research>			 -->
+		<!-- </ResearchRequirements> -->
+		<ResearchRequirements>
+			<Research>T0 assist machines</Research>			
+		</ResearchRequirements>
+		<ResearchCost>5</ResearchCost>		
+		<!-- <ProjectItemRequirements> -->
+			<!-- <Requirement> -->
+				<!-- <Key>FortifiedPCB</Key> -->
+				<!-- <Amount>512</Amount> -->
+			<!-- </Requirement> -->
+			<!-- <Requirement> -->
+				<!-- <Key>LightweightPCB</Key> -->
+				<!-- <Amount>512</Amount> -->
+			<!-- </Requirement>	 -->
+			<!-- <Requirement> -->
+				<!-- <Key>ConductivePCB</Key> -->
+				<!-- <Amount>128</Amount> -->
+			<!-- </Requirement>		 -->	
+		<!-- </ProjectItemRequirements> -->
+	</ResearchDataEntry>
+</ArrayOfResearchDataEntry>	

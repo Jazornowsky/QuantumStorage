@@ -17,4 +17,7 @@
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AVector3_002Ecs_002Fl_003AC_0021_003FUsers_003FJazornowsky_003F_002ERider2018_002E1_003Fconfig_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003FA59A307A_002DAE65_002D4630_002D97B9_002DF40436C886BC_003F84_003F8de69553_003FVector3_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=9DE0BC2B_002DE5A8_002D4DE1_002DA850_002D28EA700196EC_002Ff_003AConjunctionMod_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=9DE0BC2B_002DE5A8_002D4DE1_002DA850_002D28EA700196EC_002Ff_003AConjunctionModMachineEntity_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
-	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=9DE0BC2B_002DE5A8_002D4DE1_002DA850_002D28EA700196EC_002Ff_003AConjunctionModMachineWindow_002Ecs/@EntryIndexedValue">ForceIncluded</s:String></wpf:ResourceDictionary>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=9DE0BC2B_002DE5A8_002D4DE1_002DA850_002D28EA700196EC_002Ff_003AConjunctionModMachineWindow_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;&#xD;
+  &lt;Assembly Path="D:\Games\SteamLibrary\steamapps\common\FortressCraft\64\FC_64_Data\Managed\UnityEngine.dll" /&gt;&#xD;
+&lt;/AssemblyExplorer&gt;</s:String></wpf:ResourceDictionary>

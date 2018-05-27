@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfCraftData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<CraftData>
+		<Key>Jazornowsky.QuantumStorageControllerRecipe</Key>
+		<Category>storage</Category>
+		<Tier>3</Tier>
+		<CraftedKey>Jazornowsky.QuantumStorageControllerBlock</CraftedKey>
+		<CraftedAmount>1</CraftedAmount>
+		<Costs>
+			<CraftCost>
+				<Key>AlloyedMachineBlock</Key>
+				<Amount>1</Amount>
+			</CraftCost>
+			<CraftCost>
+				<Key>AdvancedMachineBlock</Key>
+				<Amount>1</Amount>
+			</CraftCost>
+			<CraftCost>
+				<Key>Jazornowsky.QuantumDataUnit</Key>
+				<Amount>100</Amount>
+			</CraftCost>
+		</Costs>
+		<ResearchCost>5</ResearchCost>
+		<ResearchRequirements>
+			<Research>Jazornowsky.QuantumStorageResearch</Research>
+		</ResearchRequirements>
+		<Description>Controller for Quantum Storage System (QSS).</Description>
+		<Hint>Controller for Quantum Storage System (QSS).</Hint>
+	</CraftData>
+	
+	<CraftData>
+		<Key>Jazornowsky.QuantumStorage1k</Key>
+		<Category>storage</Category>
+		<Tier>3</Tier>
+		<CraftedKey>Jazornowsky.QuantumStorage1kBlock</CraftedKey>
+		<CraftedAmount>1</CraftedAmount>
+		<Costs>
+			<CraftCost>
+				<Key>AlloyedMachineBlock</Key>
+				<Amount>1</Amount>
+			</CraftCost>
+			<CraftCost>
+				<Key>Jazornowsky.QuantumDataUnit</Key>
+				<Amount>25</Amount>
+			</CraftCost>
+		</Costs>
+		<ResearchCost>3</ResearchCost>
+		<ResearchRequirements>
+			<Research>Jazornowsky.QuantumStorageResearch</Research>
+		</ResearchRequirements>
+		<Description>
+			Storage for Quantum Storage System (QSS).
+			Can Hold up to 1k items.
+		</Description>
+		<Hint>Storage for Quantum Storage System (QSS).</Hint>
+	</CraftData>
+	
+	<CraftData>
+		<Key>Jazornowsky.QuantumStorage2k</Key>
+		<Category>storage</Category>
+		<Tier>3</Tier>
+		<CraftedKey>Jazornowsky.QuantumStorage2kBlock</CraftedKey>
+		<CraftedAmount>1</CraftedAmount>
+		<Costs>
+			<CraftCost>
+				<Key>Jazornowsky.QuantumStorage1kBlock</Key>
+				<Amount>1</Amount>
+			</CraftCost>
+			<CraftCost>
+				<Key>Jazornowsky.QuantumDataUnit</Key>
+				<Amount>52</Amount>
+			</CraftCost>
+		</Costs>
+		<ResearchCost>5</ResearchCost>
+		<ResearchRequirements>
+			<Research>Jazornowsky.QuantumStorageResearch</Research>
+		</ResearchRequirements>
+		<Description>
+			Storage for Quantum Storage System (QSS).
+			Can Hold up to 2k items.
+		</Description>
+		<Hint>Storage for Quantum Storage System (QSS).</Hint>
+	</CraftData>
+	
+	<CraftData>
+		<Key>Jazornowsky.QuantumStorage4k</Key>
+		<Category>storage</Category>
+		<Tier>3</Tier>
+		<CraftedKey>Jazornowsky.QuantumStorage4kBlock</CraftedKey>
+		<CraftedAmount>1</CraftedAmount>
+		<Costs>
+			<CraftCost>
+				<Key>Jazornowsky.QuantumStorage2kBlock</Key>
+				<Amount>1</Amount>
+			</CraftCost>
+			<CraftCost>
+				<Key>Jazornowsky.QuantumDataUnit</Key>
+				<Amount>110</Amount>
+			</CraftCost>
+		</Costs>
+		<ResearchCost>5</ResearchCost>
+		<ResearchRequirements>
+			<Research>Jazornowsky.QuantumStorageResearch</Research>
+		</ResearchRequirements>
+		<Description>
+			Storage for Quantum Storage System (QSS).
+			Can Hold up to 4k items.
+		</Description>
+		<Hint>Storage for Quantum Storage System (QSS).</Hint>
+	</CraftData>
+	
+	<CraftData>
+		<Key>Jazornowsky.QuantumOutputPort</Key>
+		<Category>storage</Category>
+		<Tier>3</Tier>
+		<CraftedKey>Jazornowsky.QuantumOutputPortBlock</CraftedKey>
+		<CraftedAmount>1</CraftedAmount>
+		<Costs>
+			<CraftCost>
+				<Key>AlloyedMachineBlock</Key>
+				<Amount>1</Amount>
+			</CraftCost>
+			<CraftCost>
+				<Key>AdvancedMachineBlock</Key>
+				<Amount>1</Amount>
+			</CraftCost>
+			<CraftCost>
+				<Key>MotorisedConveyor</Key>
+				<Amount>1</Amount>
+			</CraftCost>
+			<CraftCost>
+				<Key>Jazornowsky.QuantumDataUnit</Key>
+				<Amount>25</Amount>
+			</CraftCost>
+		</Costs>
+		<ResearchCost>5</ResearchCost>
+		<ResearchRequirements>
+			<Research>Jazornowsky.QuantumStorageResearch</Research>
+		</ResearchRequirements>
+		<Description>
+			Removes the specified type of item from the Quantum Storage System.
+		</Description>
+		<Hint>Place next to Quantum Storage to extract items.</Hint>
+	</CraftData>
+	
+	<CraftData>
+		<Key>Jazornowsky.QuantumInputPort</Key>
+		<Category>storage</Category>
+		<Tier>3</Tier>
+		<CraftedKey>Jazornowsky.QuantumInputPortBlock</CraftedKey>
+		<CraftedAmount>1</CraftedAmount>
+		<Costs>
+			<CraftCost>
+				<Key>AlloyedMachineBlock</Key>
+				<Amount>1</Amount>
+			</CraftCost>
+			<CraftCost>
+				<Key>AdvancedMachineBlock</Key>
+				<Amount>1</Amount>
+			</CraftCost>
+			<CraftCost>
+				<Key>MotorisedConveyor</Key>
+				<Amount>1</Amount>
+			</CraftCost>
+			<CraftCost>
+				<Key>Jazornowsky.QuantumDataUnit</Key>
+				<Amount>25</Amount>
+			</CraftCost>
+		</Costs>
+		<ResearchCost>5</ResearchCost>
+		<ResearchRequirements>
+			<Research>Jazornowsky.QuantumStorageResearch</Research>
+		</ResearchRequirements>
+		<Description>
+			Inserts items into the Quantum Storage System.
+		</Description>
+		<Hint>Place next to Quantum Storage to extract items.</Hint>
+	</CraftData>
+	
+	<CraftData>
+		<Key>Jazornowsky.QuantumDataUnitAssemblerRecipe</Key>
+		<Category>manufacturing</Category>
+		<Tier>3</Tier>
+		<CraftedKey>Jazornowsky.QuantumDataUnitAssembler</CraftedKey>
+		<CraftedAmount>1</CraftedAmount>
+		<Costs>
+			<CraftCost>
+				<Key>TitaniumBar</Key>
+				<Amount>64</Amount>
+			</CraftCost>
+			<CraftCost>
+				<Key>NickelBar</Key>
+				<Amount>64</Amount>
+			</CraftCost>			
+		</Costs>
+		<ResearchRequirements>
+			<Research>Jazornowsky.QuantumStorageResearch</Research>			
+		</ResearchRequirements>
+		<Description>Assembles Quantum Data Unit from Crystal Clock.</Description>
+		<Hint>Uses 400 pps.</Hint>
+		<ResearchCost>2</ResearchCost>
+	</CraftData>
+</ArrayOfCraftData>

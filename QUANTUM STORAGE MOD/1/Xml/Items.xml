@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfItemEntry xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<ItemEntry>
+		<Key>Jazornowsky.QuantumDataUnit</Key>
+		<Name>Quantum Data Unit</Name>
+		<Plural>Quantum Data Units</Plural>
+		<Type>ItemStack</Type>
+		<Object>LightweightPCB</Object>
+		<Sprite>Jazornowsky.QuantumDataUnit</Sprite>
+		<Category>CraftingIngredient</Category>
+		<ResearchRequirements>
+			<Research>Jazornowsky.QuantumStorageResearch</Research>
+		</ResearchRequirements>
+		<ScanRequirements>
+			<Scan>TitaniumOre</Scan>
+			<Scan>NickelOre</Scan>
+		</ScanRequirements>
+	</ItemEntry>
+</ArrayOfItemEntry>
