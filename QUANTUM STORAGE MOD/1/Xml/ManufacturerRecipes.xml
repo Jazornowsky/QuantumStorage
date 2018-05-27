@@ -138,7 +138,7 @@
 			<Research>Jazornowsky.QuantumStorageResearch</Research>
 		</ResearchRequirements>
 		<Description>
-			Removes the specified type of item from the Quantum Storage System.
+			Remove the specified type of item from the Quantum Storage System.
 		</Description>
 		<Hint>Place next to Quantum Storage to extract items.</Hint>
 	</CraftData>
@@ -172,7 +172,7 @@
 			<Research>Jazornowsky.QuantumStorageResearch</Research>
 		</ResearchRequirements>
 		<Description>
-			Inserts items into the Quantum Storage System.
+			Insert items into the Quantum Storage System.
 		</Description>
 		<Hint>Place next to Quantum Storage to extract items.</Hint>
 	</CraftData>

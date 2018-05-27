@@ -22,6 +22,7 @@ namespace Jazornowsky.QuantumStorage
         private GameObject _holoCubePreview;
         private bool _holoPreviewDirty;
         private bool _linkedToGo;
+        private bool _hooverInitialised;
         private long[] _controllerPos = new long[3];
         public ItemBase Exemplar;
 
@@ -42,13 +43,14 @@ namespace Jazornowsky.QuantumStorage
         public override string GetPopupText()
         {
             string txt = DisplayUtils.MachineDisplay(MachineName);
+            var quantumStorageController = _storageIoService.GetStorageController();
             if ((_controllerPos[0] == 0 && _controllerPos[1] == 0 && _controllerPos[2] == 0) ||
-                _storageIoService.GetStorageController() == null)
+                quantumStorageController == null)
             {
                 txt += "QUANTUM STORAGE CONTROLLER NOT FOUND.\n";
             }
 
-            if (!_storageIoService.GetStorageController().HasPower())
+            if (quantumStorageController != null && !quantumStorageController.HasPower())
             {
                 txt += "QUANTUM STORAGE CONTROLLER HAS NO POWER.\n";
             }
@@ -117,23 +119,35 @@ namespace Jazornowsky.QuantumStorage
 
         public override void LowFrequencyUpdate()
         {
+            UpdateOutput();
+        }
+
+        private void UpdateOutput()
+        {
             var itemConsumer = _storageIoService.GetItemConsumer();
-            if (_storageIoService.GetStorageController().HasPower() && itemConsumer != null && Exemplar != null)
+            if (!_storageIoService.GetStorageController().HasPower() || itemConsumer == null ||
+                Exemplar == null)
             {
-                var exemplarCopy = Exemplar.NewInstance();
-                var itemToGive = Exemplar.NewInstance();
-                exemplarCopy.SetAmount(1);
-                itemToGive.SetAmount(1);
-                if (exemplarCopy != null && exemplarCopy.GetAmount() > 0)
-                {
-                    var itemBase = _storageIoService.GetStorageController().GetItems()
-                        .Find(x => x.mnItemID == exemplarCopy.mnItemID);
-                    LogUtils.LogDebug(MachineName, "itemBase: " + itemBase.GetDisplayString());
-                    if (itemBase != null && itemBase.GetAmount() > 0 && itemConsumer.TryDeliverItem(this, itemToGive, 0, 0, true))
-                    {
-                        _storageIoService.GetStorageController().TakeItem(ref exemplarCopy);
-                    }
-                }
+                return;
+            }
+
+            var exemplarCopy = Exemplar.NewInstance();
+            var itemToGive = Exemplar.NewInstance();
+            exemplarCopy.SetAmount(1);
+            itemToGive.SetAmount(1);
+
+            if (exemplarCopy == null || exemplarCopy.GetAmount() <= 0)
+            {
+                return;
+            }
+
+            var itemInStorage = _storageIoService.GetStorageController().GetItems()
+                .Find(x => x.mnItemID == exemplarCopy.mnItemID);
+
+            if (itemInStorage != null && itemInStorage.GetAmount() > 0 &&
+                itemConsumer.TryDeliverItem(this, itemToGive, 0, 0, true))
+            {
+                _storageIoService.GetStorageController().TakeItem(ref exemplarCopy);
             }
         }
 
@@ -151,17 +165,16 @@ namespace Jazornowsky.QuantumStorage
 
         public void SetExemplar(ItemBase lItem)
         {
-            /*if (this.mSourceCrate != null && (double)this.mSourceCrate.mrOutputLockTimer > 0.0)
-                Debug.LogWarning((object)"Warning, changing exemplar whilst we have a SourceCrate locked!");*/
-            if (this.Exemplar == null || lItem == null)
+            if (Exemplar == null || lItem == null)
             {
                 _holoPreviewDirty = true;
-                if (lItem == null)
+                if (lItem == null) { 
                     Debug.Log((object) "MSOP Cleared Exemplar");
+                }
             }
             else if (lItem.mType == ItemType.ItemCubeStack)
             {
-                if (this.Exemplar.mType == ItemType.ItemCubeStack)
+                if (Exemplar.mType == ItemType.ItemCubeStack)
                 {
                     if ((lItem as ItemCubeStack).mCubeType == (this.Exemplar as ItemCubeStack).mCubeType &&
                         (lItem as ItemCubeStack).mCubeValue == (this.Exemplar as ItemCubeStack).mCubeValue)
@@ -178,8 +191,9 @@ namespace Jazornowsky.QuantumStorage
             }
             else
             {
-                if (lItem.mnItemID == Exemplar.mnItemID)
+                if (lItem.mnItemID == Exemplar.mnItemID) { 
                     return;
+                }
                 _holoPreviewDirty = true;
             }
 
@@ -203,113 +217,103 @@ namespace Jazornowsky.QuantumStorage
 
         public override void UnityUpdate()
         {
-            /*if (!_linkedToGo)
+            UpdateMeshText();
+            UpdateWorkLight();
+            InitHoover();
+        }
+
+        private void UpdateMeshText()
+        {
+            if (mDistanceToPlayer >= 12.0 || !AmInSameRoom())
             {
-                if (mWrapper?.mGameObjectList == null)
-                    return;
-                if (mWrapper.mGameObjectList[0].gameObject == (Object) null)
-                    Debug.LogError((object) "MSIP missing game object #0 (GO)?");
-                MaterialPropertyBlock properties = new MaterialPropertyBlock();
-                Color color = Color.white;
-                if (mValue == 0)
-                    color = Color.green;
-                if (mValue == 1)
-                    color = Color.cyan;
-                if (mValue == 2)
-                    color = Color.magenta;
-                properties.SetColor("_GlowColor", color * 2f);
-//                OutputHopperObject = mWrapper.mGameObjectList[0].gameObject.transform.Search("Output Hopper").gameObject;
-                _holoCubePreview = mWrapper.mGameObjectList[0].gameObject.transform.Search("HoloCube").gameObject;
-//                NoItem = this.mWrapper.mGameObjectList[0].gameObject.transform.Search("NoItemSet").gameObject;
-//                SetTier(this.NoItem);
-                _holoCubePreview.SetActive(false);
-                _linkedToGo = true;
-                _holoPreviewDirty = true;
+                return;
+            }
+
+            if (!GameObjectsInitialized())
+            {
+                return;
+            }
+
+            string meshText = "OUTPUT:\n";
+            if (Exemplar != null)
+            {
+                meshText += "" + Exemplar.GetDisplayString();
             }
             else
             {
-                if (_holoPreviewDirty)
-                {
-                    if (_holoPreview != null)
-                    {
-                        Object.Destroy(_holoPreview);
-                        _holoPreview = null;
-                    }
+                meshText += "NONE";
+            }
 
-                    if (Exemplar != null)
-                    {
-//                        NoItem.SetActive(false);
-                        if (this.Exemplar.mType == ItemType.ItemCubeStack)
-                        {
-                            _holoCubePreview.SetActive(true);
-//                            SetTier(_holoCubePreview);
-                        }
-                        else
-                        {
-                            int index = (int) ItemEntry.mEntries[Exemplar.mnItemID].Object;
-                            _holoPreview = Object.Instantiate<GameObject>(
-                                SpawnableObjectManagerScript.instance.maSpawnableObjects[index],
-                                mWrapper.mGameObjectList[0].gameObject.transform.position +
-                                new Vector3(0.0f, 1.5f, 0.0f), Quaternion.identity);
-                            _holoPreview.transform.parent = mWrapper.mGameObjectList[0].gameObject.transform;
-                            if (_holoPreview.GetComponent<SetIngotMPB>() != null)
-                                Object.Destroy(_holoPreview.GetComponent<SetIngotMPB>());
-//                            SetTier(_holoPreview);
-                            _holoPreview.gameObject.AddComponent<RotateConstantlyScript>();
-                            _holoPreview.gameObject.GetComponent<RotateConstantlyScript>().YRot = 1f;
-                            _holoPreview.gameObject.GetComponent<RotateConstantlyScript>().XRot = 0.35f;
-                            _holoPreview.SetActive(true);
-                            _holoCubePreview.SetActive(false);
-                        }
-                    }
-                    else
-                    {
-                        _holoCubePreview.SetActive(false);
-//                        NoItem.SetActive(true);
-                    }
+            TextMesh textMesh = mWrapper.mGameObjectList[0].gameObject.transform.Search("Storage Text")
+                .GetComponent<TextMesh>();
+            if (textMesh != null)
+            {
+                Renderer renderer = textMesh.GetComponent<Renderer>();
+                textMesh.text = meshText;
+                renderer.enabled = true;
+            }
+        }
 
-                    _holoPreviewDirty = false;
-                }
+        private void UpdateWorkLight()
+        {
+            if (!GameObjectsInitialized())
+            {
+                return;
+            }
+            Light light = mWrapper.mGameObjectList[0].transform.Search("HooverGraphic").GetComponent<Light>();
+            var maxLightDistance = 64f;
 
-                if (this.mbWellBehindPlayer || this.mSegment.mbOutOfView)
+            bool flag = !mbWellBehindPlayer;
+
+            if (mDistanceToPlayer > (double) maxLightDistance)
+            {
+                flag = false;
+            }
+            if (flag)
+            {
+                if (!light.enabled)
                 {
-                    if (_holoPreview != null && _holoPreview.activeSelf)
-                        _holoPreview.SetActive(false);
-                    /*if (OutputHopperObject.activeSelf)
-                        OutputHopperObject.SetActive(false);
-                    if (Exemplar == null)
-                    {
-                        if (NoItem.activeSelf)
-                            NoItem.SetActive(false);
-                    }#1#
-                    else if (Exemplar.mType == ItemType.ItemCubeStack)
-                    {
-                        if (_holoCubePreview.activeSelf)
-                            _holoCubePreview.SetActive(false);
-                    }
-                    else if (_holoPreview.activeSelf)
-                        _holoPreview.SetActive(false);
+                    light.enabled = true;
+                    light.range = 0.05f;
                 }
-                else
+                light.color = Color.Lerp(light.color, Color.magenta, Time.deltaTime);
+                light.range += 0.1f;
+
+                if (light.range > 1.0)
                 {
-                    if (_holoPreview != null && !_holoPreview.activeSelf)
-                        this._holoPreview.SetActive(true);
-                    /*if (!OutputHopperObject.activeSelf)
-                        OutputHopperObject.SetActive(true);
-                    if (this.Exemplar == null)
-                    {
-                        if (!NoItem.activeSelf)
-                            NoItem.SetActive(true);
-                    }#1#
-                    else if (Exemplar.mType == ItemType.ItemCubeStack)
-                    {
-                        if (!_holoCubePreview.activeSelf)
-                            _holoCubePreview.SetActive(true);
-                    }
-                    else if (!_holoPreview.activeSelf)
-                        _holoPreview.SetActive(true);
+                    light.range = 1f;
                 }
-            }*/
+            }
+
+            if (!light.enabled)
+            {
+                return;
+            }
+            if (light.range < 0.150000005960464)
+            {
+                light.enabled = false;
+            }
+            else
+            {
+                light.range *= 0.95f;
+            }
+        }
+
+        private void InitHoover()
+        {
+            if (!GameObjectsInitialized() || _hooverInitialised)
+            {
+                return;
+            }
+            var hooverPart = mWrapper.mGameObjectList[0].transform.Search("HooverGraphic")
+                .GetComponent<ParticleSystem>();
+            hooverPart.SetEmissionRate(0.0f);
+            _hooverInitialised = true;
+        }
+
+        private bool GameObjectsInitialized()
+        {
+            return mWrapper.mGameObjectList != null && mWrapper.mGameObjectList.Count > 0;
         }
 
         public override HoloMachineEntity CreateHolobaseEntity(Holobase holobase)
@@ -317,6 +321,11 @@ namespace Jazornowsky.QuantumStorage
             HolobaseEntityCreationParameters parameters = new HolobaseEntityCreationParameters(this);
             parameters.AddVisualisation(holobase.mPreviewCube).Color = Color.yellow;
             return holobase.CreateHolobaseEntity(parameters);
+        }
+
+        public override bool ShouldSave()
+        {
+            return true;
         }
 
         public override bool ShouldNetworkUpdate()
