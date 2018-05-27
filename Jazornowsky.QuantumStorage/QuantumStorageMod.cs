@@ -103,11 +103,11 @@ public class QuantumStorageMod : FortressCraftMod
             parameters.ObjectType = SpawnableObjectEnum.DirectionalHopper;
             result.Entity = new QuantumOutputPortMachine(parameters);
         }
-        /*else if (parameters.Cube == QuantumInputPortType)
+        else if (parameters.Cube == QuantumInputPortType)
         {
             parameters.ObjectType = SpawnableObjectEnum.DirectionalHopper;
-            result.Entity = new QuantumInputMachine(parameters);
-        }*/
+            result.Entity = new QuantumInputPortMachine(parameters);
+        }
 
         return result;
     }

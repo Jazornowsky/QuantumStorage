@@ -27,5 +27,12 @@ namespace Jazornowsky.QuantumStorage.utils
             y = mnY - (long) position.y;
             z = mnZ - (long) position.z;
         }
+
+        public static bool IsSegmentPositionEqual(SegmentEntity segment, long tempPosX, long tempPosY, long tempPosZ)
+        {
+            return tempPosX == segment.mWrapper.mnX &&
+                   tempPosY == segment.mWrapper.mnY &&
+                   tempPosZ == segment.mWrapper.mnZ;
+        }
     }
 }

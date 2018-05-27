@@ -57,6 +57,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="QuantumInputPortMachine.cs" />
+    <Compile Include="AbstractQuantumIoMachine.cs" />
     <Compile Include="QuantumOutputPortWindow.cs" />
     <Compile Include="model\IQuantumIo.cs" />
     <Compile Include="QuantumOutputPortMachine.cs" />

@@ -13,11 +13,10 @@ namespace Jazornowsky.QuantumStorage.service
     {
         private const string LogName = "StorageIoService";
 
-        private readonly QuantumOutputPortMachine _machine;
+        private readonly AbstractQuantumIoMachine _machine;
         private readonly MachineSides _machineSides;
-        private QuantumStorageControllerMachine _quantumStorageController;
 
-        public StorageIoService(QuantumOutputPortMachine machine, MachineSides machineSides)
+        public StorageIoService(AbstractQuantumIoMachine machine, MachineSides machineSides)
         {
             _machine = machine;
             _machineSides = machineSides;
