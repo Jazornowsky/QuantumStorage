@@ -31,7 +31,8 @@ namespace Jazornowsky.QuantumStorage.service
             {
                 List<ItemBase> items = new List<ItemBase>();
                 List<IQuantumStorage> storages = new List<IQuantumStorage> {connectedStorage};
-                connectedStorage.GetConnectedStorages(ref storages);
+                List<IQuantumIo> ios = new List<IQuantumIo>();
+                connectedStorage.GetConnectedStorages(ref storages, ref ios);
                 _machineStorage.StorageBlockCount = storages.Count;
                 _machineStorage.MaxCapacity = 0;
                 _machineStorage.ItemCount = 0;
@@ -40,6 +41,11 @@ namespace Jazornowsky.QuantumStorage.service
                     _machineStorage.MaxCapacity += storages[index].GetCapacity();
                     _machineStorage.ItemCount += storages[index].GetItemCount();
                     items.AddRange(storages[index].GetItems());
+                }
+
+                foreach (var quantumIo in ios)
+                {
+                    quantumIo.SetControllerPos(_quantumStorageController.mnX, _quantumStorageController.mnY, _quantumStorageController.mnZ);
                 }
 
                 _machineStorage.Items = items;

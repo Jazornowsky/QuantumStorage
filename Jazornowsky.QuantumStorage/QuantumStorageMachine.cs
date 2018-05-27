@@ -17,7 +17,7 @@ namespace Jazornowsky.QuantumStorage
 
         private readonly int _maxCapacity;
         private GameObject[] _storageBars;
-        private bool _storageBarsInitialised;
+        private bool _gameObjectsInitialised;
         private bool _sphereInitialised;
         private List<ItemBase> _items;
         public MachineSides MachineSides = new MachineSides();
@@ -53,44 +53,46 @@ namespace Jazornowsky.QuantumStorage
 
         public List<IQuantumStorage> GetConnectedStorages(ref List<IQuantumStorage> storages)
         {
+            var quantumIos = new List<IQuantumIo>();
+            return GetConnectedStorages(ref storages, ref quantumIos);
+        }
+
+        public List<IQuantumStorage> GetConnectedStorages(ref List<IQuantumStorage> storages, ref List<IQuantumIo> quantumIos)
+        {
             List<IQuantumStorage> adjacentStorages = new List<IQuantumStorage>();
 
-            PositionUtils.GetSegmentPos(MachineSides.Front, mnX, mnY, mnZ, out long segmentX, out long segmentY,
-                out long segmentZ);
-            ProcessConnectedStorage(ref storages, segmentX, segmentY, segmentZ, adjacentStorages);
-
-            PositionUtils.GetSegmentPos(MachineSides.Back, mnX, mnY, mnZ, out segmentX, out segmentY, out segmentZ);
-            ProcessConnectedStorage(ref storages, segmentX, segmentY, segmentZ, adjacentStorages);
-
-            PositionUtils.GetSegmentPos(MachineSides.Right, mnX, mnY, mnZ, out segmentX, out segmentY, out segmentZ);
-            ProcessConnectedStorage(ref storages, segmentX, segmentY, segmentZ, adjacentStorages);
-
-            PositionUtils.GetSegmentPos(MachineSides.Left, mnX, mnY, mnZ, out segmentX, out segmentY, out segmentZ);
-            ProcessConnectedStorage(ref storages, segmentX, segmentY, segmentZ, adjacentStorages);
-
-            PositionUtils.GetSegmentPos(MachineSides.Top, mnX, mnY, mnZ, out segmentX, out segmentY, out segmentZ);
-            ProcessConnectedStorage(ref storages, segmentX, segmentY, segmentZ, adjacentStorages);
-
-            PositionUtils.GetSegmentPos(MachineSides.Bottom, mnX, mnY, mnZ, out segmentX, out segmentY, out segmentZ);
-            ProcessConnectedStorage(ref storages, segmentX, segmentY, segmentZ, adjacentStorages);
+            ProcessConnectedStorage(MachineSides.Front, ref storages, adjacentStorages, ref quantumIos);
+            ProcessConnectedStorage(MachineSides.Back, ref storages, adjacentStorages, ref quantumIos);
+            ProcessConnectedStorage(MachineSides.Right, ref storages, adjacentStorages, ref quantumIos);
+            ProcessConnectedStorage(MachineSides.Left, ref storages, adjacentStorages, ref quantumIos);
+            ProcessConnectedStorage(MachineSides.Top, ref storages, adjacentStorages, ref quantumIos);
+            ProcessConnectedStorage(MachineSides.Bottom, ref storages, adjacentStorages, ref quantumIos);
 
             return adjacentStorages;
         }
 
-        private void ProcessConnectedStorage(ref List<IQuantumStorage> storages, long segmentX, long segmentY,
-            long segmentZ,
-            List<IQuantumStorage> adjacentStorages)
+        private void ProcessConnectedStorage(Vector3 side, ref List<IQuantumStorage> storages, List<IQuantumStorage> adjacentStorages, ref List<IQuantumIo> quantumIos)
         {
-            Segment adjacentStorageSegment = AttemptGetSegment(segmentX, segmentY, segmentZ);
-            if (adjacentStorageSegment != null &&
-                CubeHelper.HasEntity(adjacentStorageSegment.GetCube(segmentX, segmentY, segmentZ)) &&
-                adjacentStorageSegment.SearchEntity(segmentX, segmentY, segmentZ) is IQuantumStorage adjacentStorage)
+            PositionUtils.GetSegmentPos(side, mnX, mnY, mnZ, out long segmentX, out long segmentY,
+                out long segmentZ);
+            Segment adjacentSegment = AttemptGetSegment(segmentX, segmentY, segmentZ);
+            if (adjacentSegment != null &&
+                CubeHelper.HasEntity(adjacentSegment.GetCube(segmentX, segmentY, segmentZ)))
             {
-                adjacentStorages.Add(adjacentStorage);
-                if (!storages.Contains(adjacentStorage))
+                if (adjacentSegment.SearchEntity(segmentX, segmentY, segmentZ) is IQuantumStorage adjacentStorage)
                 {
-                    storages.Add(adjacentStorage);
-                    adjacentStorage.GetConnectedStorages(ref storages);
+                    adjacentStorages.Add(adjacentStorage);
+                    if (!storages.Contains(adjacentStorage))
+                    {
+                        storages.Add(adjacentStorage);
+                        adjacentStorage.GetConnectedStorages(ref storages, ref quantumIos);
+                    }
+                } else if (quantumIos != null && adjacentSegment.SearchEntity(segmentX, segmentY, segmentZ) is IQuantumIo adjacentIo)
+                {
+                    if (!quantumIos.Contains(adjacentIo))
+                    {
+                        quantumIos.Add(adjacentIo);
+                    }
                 }
             }
         }
@@ -196,7 +198,7 @@ namespace Jazornowsky.QuantumStorage
                 _storageBars[index] = powerStorageBars[index].gameObject;
             }
 
-            _storageBarsInitialised = true;
+            _gameObjectsInitialised = true;
         }
 
         public override bool ShouldNetworkUpdate()
@@ -204,58 +206,20 @@ namespace Jazornowsky.QuantumStorage
             return true;
         }
 
-        public void InitSphere()
-        {
-            var sphereHolder = mWrapper.mGameObjectList[0].transform.Search("_SphereHolder");
-            if (sphereHolder == null)
-            {
-                return;
-            }
-
-            sphereHolder.gameObject.SetActive(true);
-
-            LODGroup lodGroup = mWrapper.mGameObjectList[0].GetComponent<LODGroup>();
-            if (lodGroup == null)
-            {
-                return;
-            }
-
-            lodGroup.enabled = true;
-
-            sphereHolder.gameObject.GetComponent<RotateConstantlyScript>().gameObject.GetComponent<LODGroup>().enabled =
-                true;
-
-            _sphereInitialised = true;
-        }
-
         public override void UnityUpdate()
         {
-            if (!_storageBarsInitialised)
+            if (!_gameObjectsInitialised)
             {
-                InitStorageBars();
-                return;
-            }
-
-            if (!_sphereInitialised)
-            {
-                InitSphere();
-            }
-
-            if (!mSegment.mbOutOfView && AmInSameRoom())
-            {
-                float barsSize = ((float) _items.GetItemCount()) / ((float) _maxCapacity);
-                for (int index = 0; index < _storageBars.Length; index++)
-                {
-                    _storageBars[index].transform.localScale = new Vector3(barsSize, 1f, 1f);
-                }
-            }
-
-            AudioSource component = this.mWrapper.mGameObjectList[0].gameObject.GetComponent<AudioSource>();
-            if ((double) this.mDistanceToPlayer < 8.0)
-            {
-                component.pitch = 0.4F;
-//                component.priority = 72 + (int) ((double) this.mDistanceToPlayer * 8.0);
-                component.volume = 0.8f;
+                if (this.mWrapper == null || !this.mWrapper.mbHasGameObject)
+                    return;
+                if (this.mWrapper.mGameObjectList == null)
+                    Debug.LogError((object)"Tele missing game object #0?");
+                if (mWrapper.mGameObjectList[0].gameObject == null)
+                    Debug.LogError((object)"Tele missing game object #0 (GO)?");
+                mWrapper.mGameObjectList[0].gameObject.transform.Search("Power Ready").gameObject.SetActive(false);
+                mWrapper.mGameObjectList[0].gameObject.transform.Search("Charging").gameObject.SetActive(false);
+                mWrapper.mGameObjectList[0].gameObject.transform.Search("Waypoint Direction").gameObject.SetActive(false);
+                _gameObjectsInitialised = true;
             }
         }
     }

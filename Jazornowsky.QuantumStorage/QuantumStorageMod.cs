@@ -10,28 +10,59 @@ public class QuantumStorageMod : FortressCraftMod
     private const string QuantumStorageKey = "Jazornowsky.QuantumStorage";
     public const string QuantumStorageMachineKey = "Jazornowsky.QuantumStorageMachineNetworkHandler";
     public const string QuantumStorageControllerWindowKey = "Jazornowsky.QuantumStorageControllerWindow";
+    public const string QuantumOutputPortWindowKey = "Jazornowsky.QuantumOutputPortWindow";
     private const string QuantumStorage_1KBlock = "Jazornowsky.QuantumStorage1kBlock";
     private const string QuantumStorage_2KBlock = "Jazornowsky.QuantumStorage2kBlock";
     private const string QuantumStorage_4KBlock = "Jazornowsky.QuantumStorage4kBlock";
     private const string QuantumStorageControllerKey = "Jazornowsky.QuantumStorageController";
     private const string QuantumStorageControllerBlock = "Jazornowsky.QuantumStorageControllerBlock";
-    
-    public ushort QuantumStorageType = ModManager.mModMappings.CubesByKey[QuantumStorageKey].CubeType;
-    public ushort QuantumStorage1KValue = ModManager.mModMappings.CubesByKey[QuantumStorageKey].ValuesByKey[QuantumStorage_1KBlock].Value;
-    public ushort QuantumStorage2KValue = ModManager.mModMappings.CubesByKey[QuantumStorageKey].ValuesByKey[QuantumStorage_2KBlock].Value;
-    public ushort QuantumStorage4KValue = ModManager.mModMappings.CubesByKey[QuantumStorageKey].ValuesByKey[QuantumStorage_4KBlock].Value;
+    private const string QuantumOutputPortKey = "Jazornowsky.QuantumOutputPort";
+    private const string QuantumOutputPortBlockKey = "Jazornowsky.QuantumOutputPortBlock";
+    private const string QuantumInputPortKey = "Jazornowsky.QuantumInputPort";
+    private const string QuantumInputPortBlockKey = "Jazornowsky.QuantumInputPortBlock";
 
-    public ushort QuantumStorageControllerType = ModManager.mModMappings.CubesByKey[QuantumStorageControllerKey].CubeType;
-    public ushort QuantumStorageControllerBlockValue = ModManager.mModMappings.CubesByKey[QuantumStorageControllerKey].ValuesByKey[QuantumStorageControllerBlock].Value;
+    public ushort QuantumStorageType = ModManager.mModMappings.CubesByKey[QuantumStorageKey].CubeType;
+
+    public ushort QuantumStorage1KValue =
+        ModManager.mModMappings.CubesByKey[QuantumStorageKey].ValuesByKey[QuantumStorage_1KBlock].Value;
+
+    public ushort QuantumStorage2KValue =
+        ModManager.mModMappings.CubesByKey[QuantumStorageKey].ValuesByKey[QuantumStorage_2KBlock].Value;
+
+    public ushort QuantumStorage4KValue =
+        ModManager.mModMappings.CubesByKey[QuantumStorageKey].ValuesByKey[QuantumStorage_4KBlock].Value;
+
+    public ushort QuantumStorageControllerType =
+        ModManager.mModMappings.CubesByKey[QuantumStorageControllerKey].CubeType;
+
+    public ushort QuantumStorageControllerBlockValue = ModManager.mModMappings.CubesByKey[QuantumStorageControllerKey]
+        .ValuesByKey[QuantumStorageControllerBlock].Value;
+
+    public ushort QuantumOutputPortType = ModManager.mModMappings.CubesByKey[QuantumOutputPortKey].CubeType;
+
+    public ushort QuantumOutputPortBlockValue = ModManager.mModMappings.CubesByKey[QuantumOutputPortKey]
+        .ValuesByKey[QuantumOutputPortBlockKey].Value;
+
+    public ushort QuantumInputPortType = ModManager.mModMappings.CubesByKey[QuantumInputPortKey].CubeType;
+
+    public ushort QuantumInputPortBlockValue = ModManager.mModMappings.CubesByKey[QuantumInputPortKey]
+        .ValuesByKey[QuantumOutputPortBlockKey].Value;
 
     public override ModRegistrationData Register()
     {
         ModRegistrationData modRegistrationData = new ModRegistrationData();
         modRegistrationData.RegisterEntityHandler(QuantumStorageControllerKey);
-        modRegistrationData.RegisterEntityHandler(QuantumStorageKey);
         modRegistrationData.RegisterEntityUI(QuantumStorageControllerKey, new QuantumStorageControllerWindow());
+        modRegistrationData.RegisterEntityUI(QuantumOutputPortKey, new QuantumOutputPortWindow());
+        modRegistrationData.RegisterEntityHandler(QuantumStorageKey);
+        modRegistrationData.RegisterEntityHandler(QuantumOutputPortKey);
+        modRegistrationData.RegisterEntityHandler(QuantumInputPortKey);
 
-        UIManager.NetworkCommandFunctions.Add(QuantumStorageControllerWindowKey, QuantumStorageControllerWindow.HandleNetworkCommand);
+        UIManager.NetworkCommandFunctions.Add(QuantumStorageControllerWindowKey,
+            QuantumStorageControllerWindow.HandleNetworkCommand);
+
+        UIManager.NetworkCommandFunctions.Add(QuantumOutputPortWindowKey,
+            QuantumOutputPortWindow.HandleNetworkCommand);
 
         LogUtils.LogDebug(ModName, "registered");
 
@@ -46,15 +77,19 @@ public class QuantumStorageMod : FortressCraftMod
         {
             parameters.ObjectType = SpawnableObjectEnum.ResearchStation;
             result.Entity = new QuantumStorageControllerMachine(parameters);
-        } else if (parameters.Cube == QuantumStorageType)
+        }
+        else if (parameters.Cube == QuantumStorageType)
         {
-            parameters.ObjectType = SpawnableObjectEnum.PowerStorageBlock_T3;
-            if (parameters.Value == QuantumStorage1KValue) {
+            parameters.ObjectType = SpawnableObjectEnum.Teleporter;
+            if (parameters.Value == QuantumStorage1KValue)
+            {
                 result.Entity = new QuantumStorageMachine(parameters, 1024);
-            } else if (parameters.Value == QuantumStorage2KValue)
+            }
+            else if (parameters.Value == QuantumStorage2KValue)
             {
                 result.Entity = new QuantumStorageMachine(parameters, 2048);
-            } else if (parameters.Value == QuantumStorage4KValue)
+            }
+            else if (parameters.Value == QuantumStorage4KValue)
             {
                 result.Entity = new QuantumStorageMachine(parameters, 4096);
             }
@@ -63,6 +98,16 @@ public class QuantumStorageMod : FortressCraftMod
                 LogUtils.LogDebug(ModName, "QuantumStorageMachine missing entity");
             }
         }
+        else if (parameters.Cube == QuantumOutputPortType)
+        {
+            parameters.ObjectType = SpawnableObjectEnum.DirectionalHopper;
+            result.Entity = new QuantumOutputPortMachine(parameters);
+        }
+        /*else if (parameters.Cube == QuantumInputPortType)
+        {
+            parameters.ObjectType = SpawnableObjectEnum.DirectionalHopper;
+            result.Entity = new QuantumInputMachine(parameters);
+        }*/
 
         return result;
     }

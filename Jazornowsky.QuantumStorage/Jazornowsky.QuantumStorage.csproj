@@ -46,11 +46,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="QuantumOutputPortWindow.cs" />
+    <Compile Include="model\IQuantumIo.cs" />
+    <Compile Include="QuantumOutputPortMachine.cs" />
     <Compile Include="QuantumStorageControllerWindow.cs" />
     <Compile Include="model\QuantumStorageControllerInterface.cs" />
     <Compile Include="model\MachineStorage.cs" />
     <Compile Include="QuantumStorageMachine.cs" />
-    <Compile Include="model\QuantumStorageInterface.cs" />
+    <Compile Include="model\IQuantumStorage.cs" />
     <Compile Include="model\MachinePower.cs" />
     <Compile Include="model\Direction.cs" />
     <Compile Include="model\IncomingItem.cs" />
@@ -60,6 +63,7 @@
     <Compile Include="QuantumStorageMod.cs" />
     <Compile Include="QuantumStorageControllerMachine.cs" />
     <Compile Include="service\StorageControllerPowerService.cs" />
+    <Compile Include="service\StorageIoService.cs" />
     <Compile Include="service\StorageControllerService.cs" />
     <Compile Include="utils\ItemBaseUtils.cs" />
     <Compile Include="utils\DisplayUtils.cs" />

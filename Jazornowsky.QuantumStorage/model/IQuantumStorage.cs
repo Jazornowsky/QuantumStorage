@@ -22,5 +22,7 @@ namespace Jazornowsky.QuantumStorage.model
         int GetItemCount();
 
         List<IQuantumStorage> GetConnectedStorages(ref List<IQuantumStorage> storages);
+
+        List<IQuantumStorage> GetConnectedStorages(ref List<IQuantumStorage> storages, ref List<IQuantumIo> quantumIos);
     }
 }

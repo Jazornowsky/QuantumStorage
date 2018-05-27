@@ -31,7 +31,7 @@ namespace Jazornowsky.QuantumStorage
 
         private readonly MachineStorage _machineStorage = new MachineStorage();
 
-        private bool notifications = true;
+        private bool _notifications = true;
         private float _secondsPassedFromLastNetworkScan = 0;
         private float _secondsPassedFromPowerConsumption = 0;
         private float _secondsPassedFromLowPowerMission = 0;
@@ -86,7 +86,7 @@ namespace Jazornowsky.QuantumStorage
         {
             if (!_machinePower.HasPower())
             {
-                if (notifications)
+                if (_notifications)
                 {
                     _secondsPassedFromLowPowerMission += LowFrequencyThread.mrPreviousUpdateTimeStep;
                     if (_secondsPassedFromLowPowerMission >= LowPowerMissionPeriod)
@@ -101,7 +101,7 @@ namespace Jazornowsky.QuantumStorage
                 return;
             }
 
-            if (notifications && _machineStorage.IsFull())
+            if (_notifications && _machineStorage.IsFull())
             {
                 _secondsPassedFromStorageFullMission += LowFrequencyThread.mrPreviousUpdateTimeStep;
                 if (_secondsPassedFromStorageFullMission >= StorageFullMissionPeriod)
@@ -144,7 +144,7 @@ namespace Jazornowsky.QuantumStorage
             }
 
             txt += "Q to ";
-            txt += notifications ? "disable" : "enable";
+            txt += _notifications ? "disable" : "enable";
             txt += " notifications.\n";
 
             if (Input.GetButtonDown("Interact") && (UIManager.AllowInteracting))
@@ -163,13 +163,13 @@ namespace Jazornowsky.QuantumStorage
 
         private void ToggleNotifications()
         {
-            if (notifications)
+            if (_notifications)
             {
-                notifications = false;
+                _notifications = false;
             }
             else
             {
-                notifications = true;
+                _notifications = true;
             }
         }
 
