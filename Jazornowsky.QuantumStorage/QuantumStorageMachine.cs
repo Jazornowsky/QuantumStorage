@@ -18,7 +18,7 @@ namespace Jazornowsky.QuantumStorage
         private readonly int _maxCapacity;
         private GameObject[] _storageBars;
         private bool _gameObjectsInitialised;
-        private bool _sphereInitialised;
+        private bool _objectColorInitialised;
         private List<ItemBase> _items;
         public MachineSides MachineSides = new MachineSides();
 
@@ -167,40 +167,6 @@ namespace Jazornowsky.QuantumStorage
             }
         }
 
-        public void InitStorageBars()
-        {
-            if (mWrapper?.mGameObjectList?.Count == null)
-            {
-                return;
-            }
-
-            var mWrapperMGameObject = mWrapper.mGameObjectList[0];
-            if (mWrapperMGameObject == null || mWrapperMGameObject.gameObject == null)
-            {
-                return;
-            }
-
-            var powerStorageBars = mWrapperMGameObject.gameObject.GetComponentsInChildren<PowerStorageBar>();
-            if (powerStorageBars == null)
-            {
-                return;
-            }
-
-            _storageBars = new GameObject[powerStorageBars.Length];
-
-            for (int index = 0; index < powerStorageBars.Length; index++)
-            {
-                if (powerStorageBars[index] == null || powerStorageBars[index].gameObject == null)
-                {
-                    return;
-                }
-
-                _storageBars[index] = powerStorageBars[index].gameObject;
-            }
-
-            _gameObjectsInitialised = true;
-        }
-
         public override bool ShouldNetworkUpdate()
         {
             return true;
@@ -208,19 +174,40 @@ namespace Jazornowsky.QuantumStorage
 
         public override void UnityUpdate()
         {
-            if (!_gameObjectsInitialised)
+            InitObjectColor();
+            DisableEffects();
+        }
+
+        private void DisableEffects()
+        {
+            if (!GameObjectsInitialized() || _gameObjectsInitialised)
             {
-                if (this.mWrapper == null || !this.mWrapper.mbHasGameObject)
-                    return;
-                if (this.mWrapper.mGameObjectList == null)
-                    Debug.LogError((object)"Tele missing game object #0?");
-                if (mWrapper.mGameObjectList[0].gameObject == null)
-                    Debug.LogError((object)"Tele missing game object #0 (GO)?");
-                mWrapper.mGameObjectList[0].gameObject.transform.Search("Power Ready").gameObject.SetActive(false);
-                mWrapper.mGameObjectList[0].gameObject.transform.Search("Charging").gameObject.SetActive(false);
-                mWrapper.mGameObjectList[0].gameObject.transform.Search("Waypoint Direction").gameObject.SetActive(false);
-                _gameObjectsInitialised = true;
+                return;
             }
+
+            mWrapper.mGameObjectList[0].gameObject.transform.Search("Power Ready").gameObject.SetActive(false);
+            mWrapper.mGameObjectList[0].gameObject.transform.Search("Charging").gameObject.SetActive(false);
+            mWrapper.mGameObjectList[0].gameObject.transform.Search("Waypoint Direction").gameObject.SetActive(false);
+            _gameObjectsInitialised = true;
+        }
+
+        private void InitObjectColor()
+        {
+            if (!GameObjectsInitialized() || _objectColorInitialised)
+            {
+                return;
+            }
+            
+            var teleporterPart = mWrapper.mGameObjectList[0].transform.Find("Mesh").gameObject;
+            MeshRenderer render2 = teleporterPart.GetComponent<MeshRenderer>();
+            render2.material.SetColor("_Color", Color.magenta);
+            _objectColorInitialised = true;
+        }
+
+        private bool GameObjectsInitialized()
+        {
+            return mWrapper?.mGameObjectList != null &&
+                   mWrapper.mGameObjectList.Count > 0;
         }
     }
 }

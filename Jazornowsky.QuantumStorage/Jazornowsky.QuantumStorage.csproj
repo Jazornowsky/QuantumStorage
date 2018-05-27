@@ -78,6 +78,7 @@
     <Compile Include="service\StorageControllerPowerService.cs" />
     <Compile Include="service\StorageIoService.cs" />
     <Compile Include="service\StorageControllerService.cs" />
+    <Compile Include="utils\GameObjectUtils.cs" />
     <Compile Include="utils\ItemBaseUtils.cs" />
     <Compile Include="utils\DisplayUtils.cs" />
     <Compile Include="utils\LogUtils.cs" />
