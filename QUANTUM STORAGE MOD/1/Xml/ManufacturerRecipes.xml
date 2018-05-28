@@ -45,7 +45,7 @@
 			</CraftCost>
 			<CraftCost>
 				<Key>Jazornowsky.QuantumDataUnit</Key>
-				<Amount>25</Amount>
+				<Amount>20</Amount>
 			</CraftCost>
 		</Costs>
 		<ResearchCost>3</ResearchCost>
@@ -73,7 +73,7 @@
 			</CraftCost>
 			<CraftCost>
 				<Key>Jazornowsky.QuantumDataUnit</Key>
-				<Amount>52</Amount>
+				<Amount>22</Amount>
 			</CraftCost>
 		</Costs>
 		<ResearchCost>5</ResearchCost>
@@ -101,7 +101,7 @@
 			</CraftCost>
 			<CraftCost>
 				<Key>Jazornowsky.QuantumDataUnit</Key>
-				<Amount>110</Amount>
+				<Amount>46</Amount>
 			</CraftCost>
 		</Costs>
 		<ResearchCost>7</ResearchCost>
@@ -137,7 +137,7 @@
 			</CraftCost>
 			<CraftCost>
 				<Key>Jazornowsky.QuantumDataUnit</Key>
-				<Amount>25</Amount>
+				<Amount>5</Amount>
 			</CraftCost>
 		</Costs>
 		<ResearchCost>5</ResearchCost>
@@ -174,7 +174,7 @@
 			</CraftCost>
 			<CraftCost>
 				<Key>Jazornowsky.QuantumDataUnit</Key>
-				<Amount>25</Amount>
+				<Amount>5</Amount>
 			</CraftCost>
 		</Costs>
 		<ResearchCost>5</ResearchCost>
