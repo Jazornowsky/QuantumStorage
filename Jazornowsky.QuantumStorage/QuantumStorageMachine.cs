@@ -197,10 +197,13 @@ namespace Jazornowsky.QuantumStorage
             {
                 return;
             }
-            
-            var teleporterPart = mWrapper.mGameObjectList[0].transform.Find("Mesh").gameObject;
-            MeshRenderer render2 = teleporterPart.GetComponent<MeshRenderer>();
-            render2.material.SetColor("_Color", Color.magenta);
+
+            var meshTransform = mWrapper.mGameObjectList[0].transform.Find("Mesh");
+            if (meshTransform?.gameObject?.GetComponent<MeshRenderer>()?.material == null)
+            {
+                return;
+            }
+            meshTransform.gameObject.GetComponent<MeshRenderer>().material.SetColor("_Color", Color.magenta);
             _objectColorInitialised = true;
         }
 

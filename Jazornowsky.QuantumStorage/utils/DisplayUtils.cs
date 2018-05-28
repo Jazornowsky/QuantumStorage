@@ -34,7 +34,7 @@ namespace Jazornowsky.QuantumStorage.utils
             string txt = "";
             if (machineStorage.StorageBlockCount == 0)
             {
-                txt = "NO STORAGE CONNECTED - PLACE STORAGE BEHIND CONTROLLER";
+                txt = "NO STORAGE CONNECTED - PLACE STORAGE BEHIND CONTROLLER\n";
             }
             else
             {
