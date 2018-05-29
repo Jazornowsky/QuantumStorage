@@ -32,6 +32,7 @@ namespace Jazornowsky.QuantumStorage
         private readonly MachineStorage _machineStorage = new MachineStorage();
 
         private bool _notifications = true;
+        private bool _anotherControllerDetected;
         private float _secondsPassedFromLastNetworkScan = 0;
         private float _secondsPassedFromPowerConsumption = 0;
         private float _secondsPassedFromLowPowerMission = 0;
@@ -112,6 +113,11 @@ namespace Jazornowsky.QuantumStorage
                 }
             }
 
+            if (_anotherControllerDetected)
+            {
+                return;
+            }
+
             _secondsPassedFromLastNetworkScan += LowFrequencyThread.mrPreviousUpdateTimeStep;
             _secondsPassedFromPowerConsumption += LowFrequencyThread.mrPreviousUpdateTimeStep;
 
@@ -138,9 +144,14 @@ namespace Jazornowsky.QuantumStorage
         {
             string txt = DisplayUtils.MachineDisplay(MachineName);
             txt += DisplayUtils.PowerDisplay(_machinePower);
-            if (_machinePower.HasPower())
+            if (_machinePower.HasPower() && !_anotherControllerDetected)
             {
                 txt += DisplayUtils.StorageDisplay(_machineStorage);
+            }
+
+            if (_anotherControllerDetected)
+            {
+                txt = "ANOTHER CONTROLLER DETECTED - ONLY ONE CONTROLLER CAN BE PRESENT\n";
             }
 
             txt += "Q to ";
@@ -206,6 +217,11 @@ namespace Jazornowsky.QuantumStorage
         public float GetMaxPower()
         {
             return _machinePower.MaxPower;
+        }
+
+        public bool IsOperating()
+        {
+            return HasPower() && !_anotherControllerDetected;
         }
 
         public bool HasPower()

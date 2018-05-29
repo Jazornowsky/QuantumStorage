@@ -143,7 +143,7 @@ namespace Jazornowsky.QuantumStorage
             DragAndDropManager.DragRemoveItem dragDelegate, SegmentEntity targetEntity)
         {
             QuantumStorageControllerMachine quantumStorageController = targetEntity as QuantumStorageControllerMachine;
-            if (!quantumStorageController.HasPower() || quantumStorageController.IsFull())
+            if (!quantumStorageController.IsOperating() || quantumStorageController.IsFull())
             {
                 return;
             }

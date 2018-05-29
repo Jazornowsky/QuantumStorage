@@ -108,7 +108,7 @@ namespace Jazornowsky.QuantumStorage
         {
             var itemConsumer = StorageIoService.GetItemConsumer();
             var storageController = StorageIoService.GetStorageController();
-            if (storageController == null || !StorageIoService.GetStorageController().HasPower() ||
+            if (storageController == null || !StorageIoService.GetStorageController().IsOperating() ||
                 itemConsumer == null || Exemplar == null)
             {
                 return;
@@ -123,9 +123,10 @@ namespace Jazornowsky.QuantumStorage
             {
                 return;
             }
-
+            
+            
             var itemInStorage = StorageIoService.GetStorageController().GetItems()
-                .Find(x => x.mnItemID == exemplarCopy.mnItemID);
+                .Find(x => x.Compare(exemplarCopy));
 
             if (itemInStorage != null && itemInStorage.GetAmount() > 0 &&
                 itemConsumer.TryDeliverItem(this, itemToGive, 0, 0, true))
@@ -136,9 +137,14 @@ namespace Jazornowsky.QuantumStorage
 
         public void SetExemplar(ItemBase lItem)
         {
+            if (lItem?.mType == null)
+            {
+                return;
+            }
+
             if (lItem.mType == ItemType.ItemCubeStack)
             {
-                if (Exemplar.mType == ItemType.ItemCubeStack)
+                if (Exemplar != null && Exemplar.mType == ItemType.ItemCubeStack)
                 {
                     if ((lItem as ItemCubeStack).mCubeType == (this.Exemplar as ItemCubeStack).mCubeType &&
                         (lItem as ItemCubeStack).mCubeValue == (this.Exemplar as ItemCubeStack).mCubeValue)
@@ -158,12 +164,16 @@ namespace Jazornowsky.QuantumStorage
             Exemplar = lItem;
             MarkDirtyDelayed();
             if (Exemplar == null)
+            {
                 FloatingCombatTextManager.instance.QueueText(mnX, mnY, mnZ, 1.05f,
                     PersistentSettings.GetString("Cleared!"), Color.cyan, 1f, 64f);
+            }
             else
+            {
                 FloatingCombatTextManager.instance.QueueText(mnX, mnY, mnZ, 1.05f,
                     PersistentSettings.GetString("Currently_outputting") + " " + ItemManager.GetItemName(Exemplar),
                     Color.cyan, 1f, 64f);
+            }
         }
 
         public override void UnityUpdate()
