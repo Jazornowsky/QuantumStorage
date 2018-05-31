@@ -57,6 +57,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="model\ItemInputRule.cs" />
     <Compile Include="QuantumIoPortMachine.cs" />
     <Compile Include="QuantumInputPortMachine.cs" />
     <Compile Include="AbstractQuantumIoMachine.cs" />
@@ -72,7 +73,6 @@
     <Compile Include="model\MachinePower.cs" />
     <Compile Include="model\Direction.cs" />
     <Compile Include="model\IncomingItem.cs" />
-    <Compile Include="model\IncomingStorage.cs" />
     <Compile Include="model\MachineSides.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuantumStorageMod.cs" />

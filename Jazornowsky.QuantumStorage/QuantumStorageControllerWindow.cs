@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Jazornowsky.QuantumStorage.model;
 using UnityEngine;
 
 namespace Jazornowsky.QuantumStorage
@@ -12,23 +13,39 @@ namespace Jazornowsky.QuantumStorage
         private const string InputStatusLabel = "inputStatus";
         private const string OutputStatusButton = "outputButton";
         private const string OutputStatusLabel = "outputStatus";
+        private const string InputRuleAddButton = "inputRuleAdd";
+        private const string InputRuleRemoveButton = "inputRuleRemove";
+        private const string InputRuleItemIcon = "inputRuleItemIcon";
+        private const string InputRuleItemLabel = "inputRuleItemLabel";
+        private const string InputRuleIncreaseButton = "inputRuleIncrease";
+        private const string InputRuleReduceButton = "inputRuleReduce";
+        private bool _itemSearch;
         public static bool Dirty;
-
-        public int SlotCount = 0;
 
         public override void SpawnWindow(SegmentEntity targetEntity)
         {
-            if (!(targetEntity is QuantumStorageControllerMachine quantumStorageController))
+            if (!(targetEntity is QuantumStorageControllerMachine controller))
             {
                 GenericMachinePanelScript.instance.Hide();
                 UIManager.RemoveUIRules("Machine");
                 return;
             }
 
-            var textHeight = 30;
-            var buttonRowStart = textHeight * 5;
+            if (_itemSearch)
+            {
+                ItemSearchWindow.SpawnWindow(this);
+                Dirty = true;
+                return;
+            }
 
-            var items = quantumStorageController.GetItems();
+            var textHeight = 30;
+            var buttonHeight = 35;
+            var itemWidth = 60;
+            var itemHeight = 80;
+            var buttonWidth = 120;
+            var buttonRowStart = textHeight * 4 + buttonHeight;
+            var itemRuleRowStart = buttonRowStart + buttonHeight * 2 + itemHeight;
+            
             manager.SetTitle(QuantumStorageControllerMachine.MachineName);
 
             manager.AddLabel(GenericMachineManager.LabelType.OneLineFullWidth, StorageSizeLabel,
@@ -48,7 +65,17 @@ namespace Jazornowsky.QuantumStorage
                 false, 10, textHeight * 4);
 
             manager.AddButton(InputStatusButton, "Toggle item input", 10, buttonRowStart);
-            manager.AddButton(OutputStatusButton, "Toggle item output", 10, buttonRowStart + textHeight);
+            manager.AddButton(OutputStatusButton, "Toggle item output", 10, buttonRowStart + buttonHeight);
+            manager.AddButton(InputRuleAddButton, "Add input item rule", 10, buttonRowStart + buttonHeight*2);
+
+            for (int i = 0; i < controller.GetItemInputRules().Count; i++)
+            {
+                manager.AddIcon(InputRuleItemIcon + i, "empty", Color.white, 10, itemRuleRowStart + itemHeight * i);
+                manager.AddLabel(GenericMachineManager.LabelType.OneLineHalfWidth, InputRuleItemLabel + i, string.Empty, Color.white, false, 28, itemRuleRowStart + itemHeight * i + 17);
+                manager.AddButton(InputRuleReduceButton + i, "-" + QuantumStorageControllerMachine.DefaultInputRuleStep, itemWidth + 10, itemRuleRowStart + itemHeight * i);
+                manager.AddButton(InputRuleIncreaseButton + i, "+" + QuantumStorageControllerMachine.DefaultInputRuleStep, buttonWidth + itemWidth + 10, itemRuleRowStart + itemHeight * i);
+                manager.AddButton(InputRuleRemoveButton + i, "X", buttonWidth / 2 + itemWidth + 10, itemRuleRowStart + itemHeight * i + buttonHeight);
+            }
 
             Dirty = true;
         }
@@ -62,38 +89,65 @@ namespace Jazornowsky.QuantumStorage
                 return;
             }
 
-            WindowUpdate(quantumStorageController);
+            if (_itemSearch)
+            {
+                if (ItemSearchWindow.UpdateMachine(this))
+                {
+                    Dirty = true;
+                }
+            }
+            else
+            {
+                WindowUpdate(quantumStorageController);
+            }
+
         }
 
-        private void WindowUpdate(QuantumStorageControllerMachine quantumStorageController)
+        private void WindowUpdate(QuantumStorageControllerMachine controller)
         {
-            if (quantumStorageController.HasPower())
+            if (controller.HasPower())
             {
                 manager.UpdateLabel(StorageSizeLabel,
-                    quantumStorageController.GetItems().GetItemCount() + "/" +
-                    quantumStorageController.GetMaxCapacity(),
+                    controller.GetItems().GetItemCount() + "/" +
+                    controller.GetMaxCapacity(),
                     Color.white);
 
                 manager.UpdateLabel(StatusLabel, "POWER OK", Color.white);
             }
 
-            if (!quantumStorageController.HasPower())
+            if (!controller.HasPower())
             {
                 manager.UpdateLabel(StorageSizeLabel, string.Empty, Color.white);
                 manager.UpdateLabel(StatusLabel, "LOW POWER", Color.red);
             }
 
-            if (!quantumStorageController.IsOperating())
+            if (!controller.IsOperating())
             {
                 manager.UpdateLabel(StorageSizeLabel, string.Empty, Color.white);
                 manager.UpdateLabel(StatusLabel, "ERROR - ANOTHER CONTROLLER DETECTED", Color.red);
             }
 
             manager.UpdateLabel(InputStatusLabel,
-                quantumStorageController.IsInputEnabled() ? "Input enabled" : "Input disabled", Color.white);
+                controller.IsInputEnabled() ? "Input enabled" : "Input disabled", Color.white);
 
             manager.UpdateLabel(OutputStatusLabel,
-                quantumStorageController.IsOutputEnabled() ? "Output enabled" : "Output disabled", Color.white);
+                controller.IsOutputEnabled() ? "Output enabled" : "Output disabled", Color.white);
+
+            for (int i = 0; i < controller.GetItemInputRules().Count; i++)
+            {
+                if (!controller.IsOperating())
+                {
+                    manager.UpdateIcon(InputRuleItemIcon + i, "empty", Color.white);
+                    manager.UpdateLabel(InputRuleItemLabel + i, string.Empty, Color.white);
+                }
+                else
+                {
+                    var itemIcon = ItemManager.GetItemIcon(controller.GetItemInputRules()[i].Item);
+                    var limit = controller.GetItemInputRules()[i].MaxInput;
+                    manager.UpdateIcon(InputRuleItemIcon + i, itemIcon, Color.white);
+                    manager.UpdateLabel(InputRuleItemLabel + i, "" + limit, Color.white);
+                }
+            }
 
             Dirty = false;
         }
@@ -108,9 +162,13 @@ namespace Jazornowsky.QuantumStorage
             {
                 controller.ToggleInput();
 
-                NetworkManager.instance.SendInterfaceCommand(QuantumStorageMod.QuantumStorageControllerWindowKey,
-                    "ToggleInput",
-                    null, null, controller, 0.0f);
+                if (!WorldScript.mbIsServer)
+                {
+                    NetworkManager.instance.SendInterfaceCommand(QuantumStorageMod.QuantumStorageControllerWindowKey,
+                        "ToggleInput",
+                        null, null, controller, 0.0f);
+                }
+                Dirty = true;
                 return true;
             }
 
@@ -118,13 +176,120 @@ namespace Jazornowsky.QuantumStorage
             {
                 controller.ToggleOutput();
 
-                NetworkManager.instance.SendInterfaceCommand(QuantumStorageMod.QuantumStorageControllerWindowKey,
-                    "ToggleOutput",
-                    null, null, controller, 0.0f);
+                if (!WorldScript.mbIsServer)
+                {
+                    NetworkManager.instance.SendInterfaceCommand(QuantumStorageMod.QuantumStorageControllerWindowKey,
+                        "ToggleOutput",
+                        null, null, controller, 0.0f);
+                }
+                Dirty = true;
                 return true;
             }
 
+            if (name.Contains(InputRuleIncreaseButton))
+            {
+                int.TryParse(name.Replace(InputRuleIncreaseButton, string.Empty), out var itemSlot);
+
+                if (itemSlot == -1)
+                {
+                    return false;
+                }
+
+                controller.IncreaseItemInputRuleLimit(controller.GetItemInputRules()[itemSlot]);
+                if (!WorldScript.mbIsServer)
+                {
+                    NetworkManager.instance.SendInterfaceCommand(QuantumStorageMod.QuantumStorageControllerWindowKey,
+                        "IncreaseItemRule",
+                        null, controller.GetItemInputRules()[itemSlot].Item, controller, 0.0f);
+                }
+                Dirty = true;
+                return true;
+            }
+
+            if (name.Contains(InputRuleReduceButton))
+            {
+                int.TryParse(name.Replace(InputRuleReduceButton, string.Empty), out var itemSlot);
+
+                if (itemSlot == -1)
+                {
+                    return false;
+                }
+
+                controller.ReduceItemInputRuleLimit(controller.GetItemInputRules()[itemSlot]);
+                if (!WorldScript.mbIsServer)
+                {
+                    NetworkManager.instance.SendInterfaceCommand(QuantumStorageMod.QuantumStorageControllerWindowKey,
+                        "ReduceItemRule",
+                        null, controller.GetItemInputRules()[itemSlot].Item, controller, 0.0f);
+                }
+                Dirty = true;
+                return true;
+            }
+
+            if (name.Contains(InputRuleRemoveButton))
+            {
+                int.TryParse(name.Replace(InputRuleRemoveButton, string.Empty), out var itemSlot);
+
+                if (itemSlot == -1)
+                {
+                    return false;
+                }
+
+                controller.RemoveItemInputRule(controller.GetItemInputRules()[itemSlot]);
+
+                if (!WorldScript.mbIsServer)
+                {
+                    NetworkManager.instance.SendInterfaceCommand(QuantumStorageMod.QuantumStorageControllerWindowKey,
+                        "RemoveItemRule",
+                        controller.GetItemInputRules()[itemSlot].MaxInput.ToString(), controller.GetItemInputRules()[itemSlot].Item, controller, 0.0f);
+                }
+                Redraw(targetEntity);
+            }
+
+            if (name.Equals(InputRuleAddButton))
+            {
+                _itemSearch = true;
+                ItemSearchWindow.SetupUIRules();
+                Redraw(targetEntity);
+                return true;
+            }
+
+            if (ItemSearchWindow.HandleButtonPress(this, name, out var selectedItem))
+            {
+                _itemSearch = false;
+                manager.RedrawWindow();
+            }
+
+            if (selectedItem == null)
+            {
+                return false;
+            }
+            else
+            {
+                var itemInputRule = new ItemInputRule();
+                itemInputRule.MaxInput = QuantumStorageControllerMachine.DefaultInputRuleStep;
+                itemInputRule.Item = selectedItem;
+                controller.AddItemInputRule(itemInputRule);
+                if (!WorldScript.mbIsServer)
+                {
+                    NetworkManager.instance.SendInterfaceCommand(QuantumStorageMod.QuantumStorageControllerWindowKey,
+                        "AddItemRule",
+                        itemInputRule.MaxInput.ToString(), selectedItem, controller, 0.0f);
+                }
+                Redraw(targetEntity);
+            }
+
             return false;
+        }
+
+        public override bool ButtonRightClicked(string name, SegmentEntity targetEntity)
+        {
+            if (name != InputRuleAddButton)
+                return base.ButtonRightClicked(name, targetEntity);
+            _itemSearch = true;
+            ItemSearchWindow.SetupUIRules();
+            Redraw(targetEntity);
+            return true;
         }
 
         public override void ButtonEnter(string name, SegmentEntity targetEntity)
@@ -204,6 +369,10 @@ namespace Jazornowsky.QuantumStorage
                 var dictionary = new Dictionary<string, int>(2);
                 dictionary.Add("ToggleInput", 1);
                 dictionary.Add("ToggleOutput", 2);
+                dictionary.Add("AddItemRule", 3);
+                dictionary.Add("RemoveItemRule", 4);
+                dictionary.Add("ReduceItemRule", 5);
+                dictionary.Add("IncreaseItemRule", 6);
 
                 if (dictionary.TryGetValue(command, out var num))
                     switch (num)
@@ -214,6 +383,29 @@ namespace Jazornowsky.QuantumStorage
                         case 2:
                             target.ToggleOutput();
                             break;
+                        case 3:
+                            var itemInputRule = new ItemInputRule();
+                            itemInputRule.Item = nic.itemContext;
+                            itemInputRule.MaxInput = int.Parse(nic.payload);
+                            target.AddItemInputRule(itemInputRule);
+                            break;
+                        case 4:
+                            var itemInputRuleToRemove = new ItemInputRule();
+                            itemInputRuleToRemove.Item = nic.itemContext;
+                            itemInputRuleToRemove.MaxInput = int.Parse(nic.payload);
+                            target.RemoveItemInputRule(itemInputRuleToRemove);
+                            break;
+                        case 5:
+                            var itemInputRuleToReduce = new ItemInputRule();
+                            itemInputRuleToReduce.Item = nic.itemContext;
+                            target.ReduceItemInputRuleLimit(itemInputRuleToReduce);
+                            break;
+                        case 6:
+                            var itemInputRuleToIncrease = new ItemInputRule();
+                            itemInputRuleToIncrease.Item = nic.itemContext;
+                            target.IncreaseItemInputRuleLimit(itemInputRuleToIncrease);
+                            break;
+
                     }
             }
 

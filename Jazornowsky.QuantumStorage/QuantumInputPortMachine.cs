@@ -55,8 +55,20 @@ namespace Jazornowsky.QuantumStorage
                 return;
             }
 
+            var itemLimit = storageController.GetItemLimit(_incomingItem);
+            var itemInStorage = storageController.GetItems().Find(x => x.Compare(_incomingItem));
+            var itemCountInStorage = 0;
+            if (itemInStorage != null)
+            {
+                itemCountInStorage = itemInStorage.GetAmount();
+            }
 
-            LogUtils.LogDebug(MachineName, "Adding item to QSS: " + _incomingItem.GetDisplayString());
+            var itemCountInStorageAfterAdd = _incomingItem.GetAmount() + itemCountInStorage;
+            if (itemLimit > 0 && itemCountInStorageAfterAdd > itemLimit)
+            {
+                return;
+            }
+
             storageController.AddItem(ref _incomingItem);
             if (_incomingItem == null || _incomingItem.GetAmount() == 0)
             {

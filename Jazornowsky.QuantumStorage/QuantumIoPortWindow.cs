@@ -176,9 +176,11 @@ namespace Jazornowsky.QuantumStorage
 
 
             if (!WorldScript.mbIsServer)
+            {
                 NetworkManager.instance.SendInterfaceCommand(QuantumStorageMod.QuantumIoPortWindowKey,
                     "StoreItem",
                     null, itemToStoreCopy, quantumStorageController, 0.0f);
+            }
         }
 
         public override bool ButtonClicked(string name, SegmentEntity targetEntity)

@@ -21,6 +21,7 @@ namespace Jazornowsky.QuantumStorage
         private const float PowerConsumptionPeriod = 1; // sec
         private const float LowPowerMissionPeriod = 30; // sec
         private const float StorageFullMissionPeriod = 30; // sec
+        public const int DefaultInputRuleStep = 100;
 
         private readonly MachineSides _machineSides = new MachineSides();
         private readonly StorageControllerService _storageControllerService;
@@ -38,6 +39,7 @@ namespace Jazornowsky.QuantumStorage
         private float _secondsPassedFromStorageFullMission = 0;
         private bool _inputEnabled = true;
         private bool _outputEnabled = true;
+        private List<ItemInputRule> _itemInputRules;
 
         public QuantumStorageControllerMachine(MachineEntityCreationParameters parameters) : base(parameters)
         {
@@ -46,12 +48,18 @@ namespace Jazornowsky.QuantumStorage
             PositionUtils.SetupSidesPositions(parameters.Flags, _machineSides);
             _storageControllerService = new StorageControllerService(this, _machineStorage, _machineSides);
             _storageControllerPowerService = new StorageControllerPowerService(this, _machinePower, _machineSides);
+            _itemInputRules = new List<ItemInputRule>();
         }
 
         public override void OnUpdateRotation(byte newFlags)
         {
             base.OnUpdateRotation(newFlags);
             PositionUtils.SetupSidesPositions(newFlags, _machineSides);
+        }
+
+        public override bool ShouldNetworkUpdate()
+        {
+            return true;
         }
 
         public int GetRemainigCapacity()
@@ -82,6 +90,79 @@ namespace Jazornowsky.QuantumStorage
         public void TakeItem(ref ItemBase item)
         {
             _storageControllerService.TakeItem(ref item);
+        }
+
+        public void AddItemInputRule(ItemInputRule itemInputRule)
+        {
+            foreach (var inputRule in _itemInputRules)
+            {
+                if (inputRule.Item.Compare(itemInputRule.Item))
+                {
+                    return;
+                }
+            }
+
+            _itemInputRules.Add(itemInputRule);
+        }
+
+        public void RemoveItemInputRule(ItemInputRule itemInputRule)
+        {
+            ItemInputRule itemRuletoRemove = null;
+            foreach (var inputRule in _itemInputRules)
+            {
+                if (inputRule.Item.Compare(itemInputRule.Item))
+                {
+                    itemRuletoRemove = inputRule;
+                }
+            }
+
+            if (itemRuletoRemove != null)
+            {
+                _itemInputRules.Remove(itemRuletoRemove);
+            }
+        }
+
+        public void IncreaseItemInputRuleLimit(ItemInputRule itemInputRule)
+        {
+            foreach (var inputRule in _itemInputRules)
+            {
+                if (inputRule.Item.Compare(itemInputRule.Item))
+                {
+                    inputRule.MaxInput += DefaultInputRuleStep;
+                    if (inputRule.MaxInput >= int.MaxValue - DefaultInputRuleStep)
+                    {
+                        inputRule.MaxInput -= DefaultInputRuleStep;
+                    }
+                }
+            }
+        }
+
+        public void ReduceItemInputRuleLimit(ItemInputRule itemInputRule)
+        {
+            foreach (var inputRule in _itemInputRules)
+            {
+                if (inputRule.Item.Compare(itemInputRule.Item))
+                {
+                    inputRule.MaxInput -= DefaultInputRuleStep;
+                    if (inputRule.MaxInput < DefaultInputRuleStep)
+                    {
+                        inputRule.MaxInput = DefaultInputRuleStep;
+                    }
+                }
+            }
+        }
+
+        public int GetItemLimit(ItemBase item)
+        {
+            foreach (var inputRule in _itemInputRules)
+            {
+                if (inputRule.Item.Compare(item))
+                {
+                    return inputRule.MaxInput;
+                }
+            }
+
+            return 0;
         }
 
         public override void LowFrequencyUpdate()
@@ -208,6 +289,12 @@ namespace Jazornowsky.QuantumStorage
             writer.Write(_machinePower.CurrentPower);
             writer.Write(_inputEnabled);
             writer.Write(_outputEnabled);
+            writer.Write(_itemInputRules.Count);
+            foreach (var itemInputRule in _itemInputRules)
+            {
+                writer.Write(itemInputRule.MaxInput);
+                ItemFile.SerialiseItem(itemInputRule.Item, writer);
+            }
         }
 
         public override void Read(BinaryReader reader, int entityVersion)
@@ -215,6 +302,15 @@ namespace Jazornowsky.QuantumStorage
             _machinePower.CurrentPower = reader.ReadSingle();
             _inputEnabled = reader.ReadBoolean();
             _outputEnabled = reader.ReadBoolean();
+            var itemInputRulesCount = reader.ReadInt32();
+            _itemInputRules = new List<ItemInputRule>();
+            for (int index = 0; index < itemInputRulesCount; index++)
+            {
+                var itemInputRule = new ItemInputRule();
+                itemInputRule.MaxInput = reader.ReadInt32();
+                itemInputRule.Item = ItemFile.DeserialiseItem(reader);
+                _itemInputRules.Add(itemInputRule);
+            }
         }
 
         public override void UnityUpdate()
@@ -285,6 +381,11 @@ namespace Jazornowsky.QuantumStorage
         public bool IsOutputEnabled()
         {
             return _outputEnabled;
+        }
+
+        public List<ItemInputRule> GetItemInputRules()
+        {
+            return _itemInputRules;
         }
 
         public bool Dirty { get; set; }
