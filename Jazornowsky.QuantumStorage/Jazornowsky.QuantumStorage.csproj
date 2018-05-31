@@ -82,6 +82,7 @@
     <Compile Include="utils\ItemBaseUtils.cs" />
     <Compile Include="utils\DisplayUtils.cs" />
     <Compile Include="utils\LogUtils.cs" />
+    <Compile Include="utils\MissionUtils.cs" />
     <Compile Include="utils\PositionUtils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

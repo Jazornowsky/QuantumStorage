@@ -36,11 +36,11 @@ namespace Jazornowsky.QuantumStorage.service
                 _machineStorage.StorageBlockCount = storages.Count;
                 _machineStorage.MaxCapacity = 0;
                 _machineStorage.ItemCount = 0;
-                for (int index = 0; index < storages.Count; index++)
+                foreach (var storage in storages)
                 {
-                    _machineStorage.MaxCapacity += storages[index].GetCapacity();
-                    _machineStorage.ItemCount += storages[index].GetItemCount();
-                    items.AddRange(storages[index].GetItems());
+                    _machineStorage.MaxCapacity += storage.GetCapacity();
+                    _machineStorage.ItemCount += storage.GetItemCount();
+                    items.AddRange(storage.GetItems());
                 }
 
                 foreach (var quantumIo in ios)

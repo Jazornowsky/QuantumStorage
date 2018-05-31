@@ -14,13 +14,13 @@ namespace Jazornowsky.QuantumStorage
     public class QuantumStorageControllerMachine : MachineEntity, PowerConsumerInterface
     {
         public static readonly string MachineName = "Quantum Storage Controller";
-        private static readonly float MaxPower = 1000.0F;
-        private static readonly float MinOperatingPower = 200.0F;
-        private static readonly float MaximumDeliveryRate = 500.0F;
-        private static readonly float NetworkScanPeriod = 5; // sec
-        private static readonly float PowerConsumptionPeriod = 1; // sec
-        private static readonly float LowPowerMissionPeriod = 30; // sec
-        private static readonly float StorageFullMissionPeriod = 30; // sec
+        private const float MaxPower = 1000.0F;
+        public static readonly float MinOperatingPower = 200.0F;
+        public static readonly float MaximumDeliveryRate = 500.0F;
+        public static readonly float NetworkScanPeriod = 5; // sec
+        private const float PowerConsumptionPeriod = 1; // sec
+        private const float LowPowerMissionPeriod = 30; // sec
+        private const float StorageFullMissionPeriod = 30; // sec
 
         private readonly MachineSides _machineSides = new MachineSides();
         private readonly StorageControllerService _storageControllerService;
@@ -85,42 +85,22 @@ namespace Jazornowsky.QuantumStorage
 
         public override void LowFrequencyUpdate()
         {
-            if (!_machinePower.HasPower())
-            {
-                if (_notifications)
-                {
-                    _secondsPassedFromLowPowerMission += LowFrequencyThread.mrPreviousUpdateTimeStep;
-                    if (_secondsPassedFromLowPowerMission >= LowPowerMissionPeriod)
-                    {
-                        MissionManager.instance.RemoveMission("Quantum Storage is low on power.");
-                        MissionManager.instance.AddMission("Quantum Storage is low on power.", 5f,
-                            Mission.ePriority.eOptional);
-                        _secondsPassedFromLowPowerMission = 0;
-                    }
-                }
-
-                return;
-            }
-
-            if (_notifications && _machineStorage.IsFull())
-            {
-                _secondsPassedFromStorageFullMission += LowFrequencyThread.mrPreviousUpdateTimeStep;
-                if (_secondsPassedFromStorageFullMission >= StorageFullMissionPeriod)
-                {
-                    MissionManager.instance.RemoveMission("Quantum Storage is full.");
-                    MissionManager.instance.AddMission("Quantum Storage is full.", 5f, Mission.ePriority.eOptional);
-                    _secondsPassedFromStorageFullMission = 0;
-                }
-            }
-
             if (_anotherControllerDetected)
             {
                 return;
             }
 
-            _secondsPassedFromLastNetworkScan += LowFrequencyThread.mrPreviousUpdateTimeStep;
-            _secondsPassedFromPowerConsumption += LowFrequencyThread.mrPreviousUpdateTimeStep;
+            if (!_machinePower.HasPower())
+            {
+                ProcessNotification(true, "Quantum Storage Controller", ref _secondsPassedFromLowPowerMission,
+                    LowPowerMissionPeriod, MissionUtils.AddLowPowerMission);
+                return;
+            }
 
+            ProcessNotification(_machineStorage.IsFull(), "Quantum Storage", ref _secondsPassedFromStorageFullMission,
+                StorageFullMissionPeriod, MissionUtils.AddLowStorageMission);
+
+            _secondsPassedFromPowerConsumption += LowFrequencyThread.mrPreviousUpdateTimeStep;
             if ((_secondsPassedFromPowerConsumption >= PowerConsumptionPeriod))
             {
                 _machinePower.ConsumePower();
@@ -128,16 +108,28 @@ namespace Jazornowsky.QuantumStorage
                 _secondsPassedFromPowerConsumption = 0;
             }
 
-            if (_secondsPassedFromLastNetworkScan < NetworkScanPeriod && !Dirty)
+            _secondsPassedFromLastNetworkScan += LowFrequencyThread.mrPreviousUpdateTimeStep;
+            if (_secondsPassedFromLastNetworkScan >= NetworkScanPeriod || Dirty)
+            {
+                _storageControllerService.UpdateStorage();
+                _secondsPassedFromLastNetworkScan = 0;
+            }
+        }
+
+        private void ProcessNotification(bool trigger, string notificationName, ref float cooldown, float cooldownTrigger,
+            MissionUtils.AddMachineMission addMachineMission)
+        {
+            if (!_notifications || !trigger)
             {
                 return;
             }
-            else
-            {
-                _secondsPassedFromLastNetworkScan = 0;
-            }
 
-            _storageControllerService.UpdateStorage();
+            cooldown += LowFrequencyThread.mrPreviousUpdateTimeStep;
+            if (cooldown >= cooldownTrigger)
+            {
+                addMachineMission(notificationName);
+                cooldown = 0;
+            }
         }
 
         public override string GetPopupText()

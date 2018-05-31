@@ -79,7 +79,8 @@ namespace Jazornowsky.QuantumStorage
             if (adjacentSegment != null &&
                 CubeHelper.HasEntity(adjacentSegment.GetCube(segmentX, segmentY, segmentZ)))
             {
-                if (adjacentSegment.SearchEntity(segmentX, segmentY, segmentZ) is IQuantumStorage adjacentStorage)
+                var segment = adjacentSegment.SearchEntity(segmentX, segmentY, segmentZ);
+                if (segment is IQuantumStorage adjacentStorage)
                 {
                     adjacentStorages.Add(adjacentStorage);
                     if (!storages.Contains(adjacentStorage))
