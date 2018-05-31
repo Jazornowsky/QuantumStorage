@@ -129,7 +129,7 @@ namespace Jazornowsky.QuantumStorage.service
             }
             List<SegmentEntity> adjacentSegmentEntities = new List<SegmentEntity>();
             adjacentSegmentEntities.Add(adjacentEntity);
-            (adjacentSegmentEntities as IQuantumStorage).GetConnectedSegments(ref adjacentSegmentEntities);
+            (adjacentEntity as IQuantumStorage).GetConnectedSegments(ref adjacentSegmentEntities);
             foreach (var segmentEntity in adjacentSegmentEntities)
             {
                 if (!(segmentEntity is IQuantumStorage storageEntity))

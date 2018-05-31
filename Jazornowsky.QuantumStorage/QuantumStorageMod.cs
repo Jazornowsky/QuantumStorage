@@ -11,11 +11,14 @@ public class QuantumStorageMod : FortressCraftMod
     public const string QuantumStorageMachineKey = "Jazornowsky.QuantumStorageMachineNetworkHandler";
     public const string QuantumStorageControllerWindowKey = "Jazornowsky.QuantumStorageControllerWindow";
     public const string QuantumOutputPortWindowKey = "Jazornowsky.QuantumOutputPortWindow";
+    public const string QuantumIoPortWindowKey = "Jazornowsky.QuantumIoPortWindow";
     private const string QuantumStorage_1KBlock = "Jazornowsky.QuantumStorage1kBlock";
     private const string QuantumStorage_2KBlock = "Jazornowsky.QuantumStorage2kBlock";
     private const string QuantumStorage_4KBlock = "Jazornowsky.QuantumStorage4kBlock";
     private const string QuantumStorageControllerKey = "Jazornowsky.QuantumStorageController";
     private const string QuantumStorageControllerBlock = "Jazornowsky.QuantumStorageControllerBlock";
+    private const string QuantumIoPortKey = "Jazornowsky.QuantumIoPort";
+    private const string QuantumIoPortBlock = "Jazornowsky.QuantumIoPortBlock";
     private const string QuantumOutputPortKey = "Jazornowsky.QuantumOutputPort";
     private const string QuantumOutputPortBlockKey = "Jazornowsky.QuantumOutputPortBlock";
     private const string QuantumInputPortKey = "Jazornowsky.QuantumInputPort";
@@ -38,6 +41,12 @@ public class QuantumStorageMod : FortressCraftMod
     public ushort QuantumStorageControllerBlockValue = ModManager.mModMappings.CubesByKey[QuantumStorageControllerKey]
         .ValuesByKey[QuantumStorageControllerBlock].Value;
 
+    public ushort QuantumIoPortType =
+        ModManager.mModMappings.CubesByKey[QuantumIoPortKey].CubeType;
+
+    public ushort QuantumIoPortBlockValue = ModManager.mModMappings.CubesByKey[QuantumIoPortKey]
+        .ValuesByKey[QuantumIoPortBlock].Value;
+
     public ushort QuantumOutputPortType = ModManager.mModMappings.CubesByKey[QuantumOutputPortKey].CubeType;
 
     public ushort QuantumOutputPortBlockValue = ModManager.mModMappings.CubesByKey[QuantumOutputPortKey]
@@ -54,7 +63,9 @@ public class QuantumStorageMod : FortressCraftMod
         modRegistrationData.RegisterEntityHandler(QuantumStorageControllerKey);
         modRegistrationData.RegisterEntityUI(QuantumStorageControllerKey, new QuantumStorageControllerWindow());
         modRegistrationData.RegisterEntityUI(QuantumOutputPortKey, new QuantumOutputPortWindow());
+        modRegistrationData.RegisterEntityUI(QuantumIoPortKey, new QuantumIoPortWindow());
         modRegistrationData.RegisterEntityHandler(QuantumStorageKey);
+        modRegistrationData.RegisterEntityHandler(QuantumIoPortKey);
         modRegistrationData.RegisterEntityHandler(QuantumOutputPortKey);
         modRegistrationData.RegisterEntityHandler(QuantumInputPortKey);
 
@@ -63,6 +74,9 @@ public class QuantumStorageMod : FortressCraftMod
 
         UIManager.NetworkCommandFunctions.Add(QuantumOutputPortWindowKey,
             QuantumOutputPortWindow.HandleNetworkCommand);
+
+        UIManager.NetworkCommandFunctions.Add(QuantumIoPortWindowKey,
+            QuantumIoPortWindow.HandleNetworkCommand);
 
         LogUtils.LogDebug(ModName, "registered");
 
@@ -97,6 +111,11 @@ public class QuantumStorageMod : FortressCraftMod
             {
                 LogUtils.LogDebug(ModName, "QuantumStorageMachine missing entity");
             }
+        }
+        else if (parameters.Cube == QuantumIoPortType)
+        {
+            parameters.ObjectType = SpawnableObjectEnum.ResearchStation;
+            result.Entity = new QuantumIoPortMachine(parameters);
         }
         else if (parameters.Cube == QuantumOutputPortType)
         {

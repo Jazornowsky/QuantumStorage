@@ -7,7 +7,7 @@
 		<PreDescription>Pinnacle of storage engineering.</PreDescription>
 		<PostDescription>Most advanced storage sollutions, yet.</PostDescription>
 		<ResearchRequirements>
-			<Research>T3 assist machines</Research>
+			<Research>T4 assist machines</Research>
 		</ResearchRequirements>	
 		<ProjectItemRequirements>
 			<Requirement>
@@ -19,7 +19,7 @@
 				<Amount>512</Amount>
 			</Requirement>
 			<Requirement>
-				<Key>ConductivePCB</Key>
+				<Key>RefinedLiquidResin</Key>
 				<Amount>128</Amount>
 			</Requirement>	
 		</ProjectItemRequirements>

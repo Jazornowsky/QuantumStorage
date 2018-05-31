@@ -9,11 +9,11 @@
 		<Costs>
 			<CraftCost>
 				<Key>AlloyedMachineBlock</Key>
-				<Amount>1</Amount>
+				<Amount>5</Amount>
 			</CraftCost>
 			<CraftCost>
 				<Key>AdvancedMachineBlock</Key>
-				<Amount>1</Amount>
+				<Amount>5</Amount>
 			</CraftCost>
 			<CraftCost>
 				<Key>Jazornowsky.QuantumDataUnit</Key>
@@ -114,6 +114,38 @@
 			Must be connected to other Quantum Storage Block or directly to back of Quantum Storage Controller.
 		</Description>
 		<Hint>Storage for Quantum Storage System (QSS).</Hint>
+	</CraftData>
+	
+	<CraftData>
+		<Key>Jazornowsky.QuantumIoPort</Key>
+		<Category>storage</Category>
+		<Tier>3</Tier>
+		<CraftedKey>Jazornowsky.QuantumIoPortBlock</CraftedKey>
+		<CraftedAmount>1</CraftedAmount>
+		<Costs>
+			<CraftCost>
+				<Key>AlloyedMachineBlock</Key>
+				<Amount>5</Amount>
+			</CraftCost>
+			<CraftCost>
+				<Key>AdvancedMachineBlock</Key>
+				<Amount>5</Amount>
+			</CraftCost>
+			<CraftCost>
+				<Key>Jazornowsky.QuantumDataUnit</Key>
+				<Amount>5</Amount>
+			</CraftCost>
+		</Costs>
+		<ResearchCost>5</ResearchCost>
+		<ResearchRequirements>
+			<Research>Jazornowsky.QuantumStorageResearch</Research>
+		</ResearchRequirements>
+		<Description>
+			Provides direct storage access.
+		</Description>
+		<Hint>
+			Place next to Quantum Storage to access storage in Quantum Storage System.
+		</Hint>
 	</CraftData>
 	
 	<CraftData>

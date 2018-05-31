@@ -57,11 +57,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="QuantumIoPortMachine.cs" />
     <Compile Include="QuantumInputPortMachine.cs" />
     <Compile Include="AbstractQuantumIoMachine.cs" />
     <Compile Include="QuantumOutputPortWindow.cs" />
     <Compile Include="model\IQuantumIo.cs" />
     <Compile Include="QuantumOutputPortMachine.cs" />
+    <Compile Include="QuantumIoPortWindow.cs" />
     <Compile Include="QuantumStorageControllerWindow.cs" />
     <Compile Include="model\QuantumStorageControllerInterface.cs" />
     <Compile Include="model\MachineStorage.cs" />

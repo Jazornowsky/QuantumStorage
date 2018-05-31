@@ -25,11 +25,10 @@ namespace Jazornowsky.QuantumStorage
         private readonly MachineSides _machineSides = new MachineSides();
         private readonly StorageControllerService _storageControllerService;
         private readonly StorageControllerPowerService _storageControllerPowerService;
+        private readonly MachineStorage _machineStorage = new MachineStorage();
 
         private readonly MachinePower
             _machinePower = new MachinePower(MaxPower, MaximumDeliveryRate, MinOperatingPower);
-
-        private readonly MachineStorage _machineStorage = new MachineStorage();
 
         private bool _notifications = true;
         public bool _anotherControllerDetected;
@@ -37,6 +36,8 @@ namespace Jazornowsky.QuantumStorage
         private float _secondsPassedFromPowerConsumption = 0;
         private float _secondsPassedFromLowPowerMission = 0;
         private float _secondsPassedFromStorageFullMission = 0;
+        private bool _inputEnabled = true;
+        private bool _outputEnabled = true;
 
         public QuantumStorageControllerMachine(MachineEntityCreationParameters parameters) : base(parameters)
         {
@@ -126,7 +127,8 @@ namespace Jazornowsky.QuantumStorage
             }
         }
 
-        private void ProcessNotification(bool trigger, string notificationName, ref float cooldown, float cooldownTrigger,
+        private void ProcessNotification(bool trigger, string notificationName, ref float cooldown,
+            float cooldownTrigger,
             MissionUtils.AddMachineMission addMachineMission)
         {
             if (!_notifications || !trigger)
@@ -146,7 +148,7 @@ namespace Jazornowsky.QuantumStorage
         {
             string txt = DisplayUtils.MachineDisplay(MachineName);
             txt += DisplayUtils.PowerDisplay(_machinePower);
-            if (_machinePower.HasPower() && !_anotherControllerDetected)
+            if (IsOperating())
             {
                 txt += DisplayUtils.StorageDisplay(_machineStorage);
             }
@@ -204,11 +206,15 @@ namespace Jazornowsky.QuantumStorage
         public override void Write(BinaryWriter writer)
         {
             writer.Write(_machinePower.CurrentPower);
+            writer.Write(_inputEnabled);
+            writer.Write(_outputEnabled);
         }
 
         public override void Read(BinaryReader reader, int entityVersion)
         {
             _machinePower.CurrentPower = reader.ReadSingle();
+            _inputEnabled = reader.ReadBoolean();
+            _outputEnabled = reader.ReadBoolean();
         }
 
         public override void UnityUpdate()
@@ -254,6 +260,31 @@ namespace Jazornowsky.QuantumStorage
         public bool IsFull()
         {
             return _machineStorage.IsFull();
+        }
+
+        public MachineStorage GetMachineStorage()
+        {
+            return _machineStorage;
+        }
+
+        public void ToggleInput()
+        {
+            _inputEnabled = !_inputEnabled;
+        }
+
+        public bool IsInputEnabled()
+        {
+            return _inputEnabled;
+        }
+
+        public void ToggleOutput()
+        {
+            _outputEnabled = !_outputEnabled;
+        }
+
+        public bool IsOutputEnabled()
+        {
+            return _outputEnabled;
         }
 
         public bool Dirty { get; set; }

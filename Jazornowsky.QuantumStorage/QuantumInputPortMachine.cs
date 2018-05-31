@@ -50,7 +50,7 @@ namespace Jazornowsky.QuantumStorage
         public override void LowFrequencyUpdate()
         {
             var storageController = StorageIoService.GetStorageController();
-            if (storageController == null || _incomingItem == null || !storageController.IsOperating())
+            if (storageController == null || _incomingItem == null || !storageController.IsOperating() || !storageController.IsInputEnabled())
             {
                 return;
             }

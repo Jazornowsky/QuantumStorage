@@ -17,7 +17,7 @@
 		<hasObject>true</hasObject>
 		<hasEntity>true</hasEntity>
 		<Category>Machine</Category>
-		<AudioWalkType>Wood</AudioWalkType>
+		<AudioWalkType>Metal</AudioWalkType>
 		<AudioBuildType>Dirt</AudioBuildType>
 		<AudioDestroyType>None</AudioDestroyType>
 		<tags>
@@ -29,6 +29,39 @@
 				<Name>Quantum Storage Controller</Name>
 				<IconName>Jazornowsky.QuantumStorageController</IconName>
 				<Description>Controller for Quantum Storage System (QSS).</Description>
+			</ValueEntry>
+		</Values>
+	</TerrainDataEntry>
+	
+	<TerrainDataEntry>
+		<Key>Jazornowsky.QuantumIoPort</Key><!-- Not used, this is a Value'd machine-->
+		<Name>Quantum I/O Port</Name>
+		<Description></Description>
+		<LayerType>PrimaryTerrain</LayerType>
+		<TopTexture>192</TopTexture>
+		<SideTexture>192</SideTexture>
+		<BottomTexture>192</BottomTexture>
+		<GUITexture>192</GUITexture>
+		<isSolid>false</isSolid>
+		<isTransparent>false</isTransparent>
+		<isHollow>false</isHollow>
+		<isGlass>false</isGlass>
+		<isPassable>false</isPassable>
+		<hasObject>true</hasObject>
+		<hasEntity>true</hasEntity>
+		<Category>Machine</Category>
+		<AudioWalkType>Metal</AudioWalkType>
+		<AudioBuildType>Dirt</AudioBuildType>
+		<AudioDestroyType>None</AudioDestroyType>
+		<tags>
+			<tag>Machinery</tag>
+		</tags>
+		<Values>
+			<ValueEntry>
+				<Key>Jazornowsky.QuantumIoPortBlock</Key>
+				<Name>Quantum I/O Port</Name>
+				<IconName>Jazornowsky.QuantumIoPort</IconName>
+				<Description>Provides direct storage access..</Description>
 			</ValueEntry>
 		</Values>
 	</TerrainDataEntry>
@@ -50,7 +83,7 @@
 		<hasObject>true</hasObject>
 		<hasEntity>true</hasEntity>
 		<Category>Machine</Category>
-		<AudioWalkType>Wood</AudioWalkType>
+		<AudioWalkType>Metal</AudioWalkType>
 		<AudioBuildType>Dirt</AudioBuildType>
 		<AudioDestroyType>None</AudioDestroyType>
 		<tags>
@@ -83,7 +116,7 @@
 		<hasObject>true</hasObject>
 		<hasEntity>true</hasEntity>
 		<Category>Machine</Category>
-		<AudioWalkType>Wood</AudioWalkType>
+		<AudioWalkType>Metal</AudioWalkType>
 		<AudioBuildType>Dirt</AudioBuildType>
 		<AudioDestroyType>None</AudioDestroyType>
 		<tags>
@@ -116,7 +149,7 @@
 		<hasObject>true</hasObject>
 		<hasEntity>true</hasEntity>
 		<Category>Machine</Category>
-		<AudioWalkType>Wood</AudioWalkType>
+		<AudioWalkType>Metal</AudioWalkType>
 		<AudioBuildType>Dirt</AudioBuildType>
 		<AudioDestroyType>None</AudioDestroyType>
 		<tags>

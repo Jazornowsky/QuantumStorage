@@ -108,8 +108,8 @@ namespace Jazornowsky.QuantumStorage
         {
             var itemConsumer = StorageIoService.GetItemConsumer();
             var storageController = StorageIoService.GetStorageController();
-            if (storageController == null || !StorageIoService.GetStorageController().IsOperating() ||
-                itemConsumer == null || Exemplar == null)
+            if (storageController == null || !storageController.IsOperating() ||
+                !storageController.IsOutputEnabled() || itemConsumer == null || Exemplar == null)
             {
                 return;
             }
@@ -222,16 +222,6 @@ namespace Jazornowsky.QuantumStorage
         public override bool ShouldNetworkUpdate()
         {
             return true;
-        }
-
-        public override void ReadNetworkUpdate(BinaryReader reader)
-        {
-            Exemplar = ItemFile.DeserialiseItem(reader);
-        }
-
-        public override void WriteNetworkUpdate(BinaryWriter writer)
-        {
-            ItemFile.SerialiseItem(Exemplar, writer);
         }
 
         public override void Write(BinaryWriter writer)
