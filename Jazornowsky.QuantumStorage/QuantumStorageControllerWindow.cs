@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Handbook;
-using Jazornowsky.QuantumStorage.utils;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jazornowsky.QuantumStorage
 {
-    class QuantumStorageControllerWindow : BaseMachineWindow
+    internal class QuantumStorageControllerWindow : BaseMachineWindow
     {
-        public const String LogName = "QuantumIoPortWindow";
+        public const string LogName = "QuantumIoPortWindow";
         private const string StorageSizeLabel = "storageSize";
         private const string StatusLabel = "status";
         private const string InputStatusButton = "inputButton";
@@ -30,11 +24,11 @@ namespace Jazornowsky.QuantumStorage
                 UIManager.RemoveUIRules("Machine");
                 return;
             }
-            
-            int textHeight = 30;
-            int buttonRowStart = textHeight * 5;
 
-            List<ItemBase> items = quantumStorageController.GetItems();
+            var textHeight = 30;
+            var buttonRowStart = textHeight * 5;
+
+            var items = quantumStorageController.GetItems();
             manager.SetTitle(QuantumStorageControllerMachine.MachineName);
 
             manager.AddLabel(GenericMachineManager.LabelType.OneLineFullWidth, StorageSizeLabel,
@@ -67,7 +61,7 @@ namespace Jazornowsky.QuantumStorage
                 UIManager.RemoveUIRules("Machine");
                 return;
             }
-            
+
             WindowUpdate(quantumStorageController);
         }
 
@@ -85,13 +79,13 @@ namespace Jazornowsky.QuantumStorage
 
             if (!quantumStorageController.HasPower())
             {
-                manager.UpdateLabel(StorageSizeLabel, String.Empty, Color.white);
+                manager.UpdateLabel(StorageSizeLabel, string.Empty, Color.white);
                 manager.UpdateLabel(StatusLabel, "LOW POWER", Color.red);
             }
 
             if (!quantumStorageController.IsOperating())
             {
-                manager.UpdateLabel(StorageSizeLabel, String.Empty, Color.white);
+                manager.UpdateLabel(StorageSizeLabel, string.Empty, Color.white);
                 manager.UpdateLabel(StatusLabel, "ERROR - ANOTHER CONTROLLER DETECTED", Color.red);
             }
 
@@ -108,20 +102,25 @@ namespace Jazornowsky.QuantumStorage
         {
             var controller = targetEntity as QuantumStorageControllerMachine;
 
-            if (controller == null || !controller.IsOperating())
-            {
-                return false;
-            }
+            if (controller == null || !controller.IsOperating()) return false;
 
             if (name.Equals(InputStatusButton))
             {
                 controller.ToggleInput();
+
+                NetworkManager.instance.SendInterfaceCommand(QuantumStorageMod.QuantumStorageControllerWindowKey,
+                    "ToggleInput",
+                    null, null, controller, 0.0f);
                 return true;
             }
 
             if (name.Equals(OutputStatusButton))
             {
                 controller.ToggleOutput();
+
+                NetworkManager.instance.SendInterfaceCommand(QuantumStorageMod.QuantumStorageControllerWindowKey,
+                    "ToggleOutput",
+                    null, null, controller, 0.0f);
                 return true;
             }
 
@@ -130,12 +129,9 @@ namespace Jazornowsky.QuantumStorage
 
         public override void ButtonEnter(string name, SegmentEntity targetEntity)
         {
-            QuantumStorageControllerMachine quantumStorageController = targetEntity as QuantumStorageControllerMachine;
+            var quantumStorageController = targetEntity as QuantumStorageControllerMachine;
 
-            if (quantumStorageController == null || !quantumStorageController.HasPower())
-            {
-                return;
-            }
+            if (quantumStorageController == null || !quantumStorageController.HasPower()) return;
         }
 
         /*public static bool TakeItems(Player player, QuantumStorageControllerMachine quantumStorageController,
@@ -200,31 +196,28 @@ namespace Jazornowsky.QuantumStorage
 
         public static NetworkInterfaceResponse HandleNetworkCommand(Player player, NetworkInterfaceCommand nic)
         {
-            if (!(nic.target is QuantumStorageControllerMachine target))
-            {
-                return null;
-            }
+            if (!(nic.target is QuantumStorageControllerMachine target)) return null;
 
-            string command = nic.command;
+            var command = nic.command;
             if (command != null)
             {
-                Dictionary<string, int> dictionary = new Dictionary<string, int>(2);
-                dictionary.Add("TakeItem", 1);
-                dictionary.Add("StoreItem", 2);
+                var dictionary = new Dictionary<string, int>(2);
+                dictionary.Add("ToggleInput", 1);
+                dictionary.Add("ToggleOutput", 2);
 
                 if (dictionary.TryGetValue(command, out var num))
-                {
                     switch (num)
                     {
                         case 1:
+                            target.ToggleInput();
                             break;
                         case 2:
+                            target.ToggleOutput();
                             break;
                     }
-                }
             }
 
-            NetworkInterfaceResponse interfaceResponse = new NetworkInterfaceResponse();
+            var interfaceResponse = new NetworkInterfaceResponse();
             interfaceResponse.entity = target;
             interfaceResponse.inventory = player.mInventory;
             return interfaceResponse;

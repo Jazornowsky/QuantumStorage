@@ -1,23 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Handbook;
-using Jazornowsky.QuantumStorage.utils;
 using UnityEngine;
 
 namespace Jazornowsky.QuantumStorage
 {
-    class QuantumIoPortWindow : BaseMachineWindow
+    internal class QuantumIoPortWindow : BaseMachineWindow
     {
-        public const String LogName = "QuantumIoPortWindow";
+        public const string LogName = "QuantumIoPortWindow";
         private const string StorageSizeLabel = "storageSize";
         private const string StatusLabel = "status";
         public static bool Dirty;
         public static bool NetworkRedraw;
 
-        public int SlotCount = 0;
+        public int SlotCount;
 
         public override void SpawnWindow(SegmentEntity targetEntity)
         {
@@ -28,13 +23,13 @@ namespace Jazornowsky.QuantumStorage
                 return;
             }
 
-            int itemWidth = 60;
-            int itemHeight = 60;
-            int textHeight = 30;
-            int itemRowStart = textHeight * 3;
+            var itemWidth = 60;
+            var itemHeight = 60;
+            var textHeight = 30;
+            var itemRowStart = textHeight * 3;
 
-            List<ItemBase> items = quantumIoPort.GetController().GetItems();
-            manager.SetTitle(QuantumStorageControllerMachine.MachineName);
+            var items = quantumIoPort.GetController().GetItems();
+            manager.SetTitle(QuantumIoPortMachine.MachineName);
 
             manager.AddLabel(GenericMachineManager.LabelType.OneLineFullWidth, StorageSizeLabel,
                 string.Empty, Color.white,
@@ -45,10 +40,10 @@ namespace Jazornowsky.QuantumStorage
                 false, 10, textHeight * 2);
 
             SlotCount = 0;
-            for (int index = 0; index < items.Count(); index++)
+            for (var index = 0; index < items.Count(); index++)
             {
-                int line = index / 5;
-                int column = index % 5;
+                var line = index / 5;
+                var column = index % 5;
                 manager.AddIcon("iconItem" + index, "empty", Color.white, column * itemWidth + 10,
                     line * itemHeight + itemRowStart + 10);
                 manager.AddLabel(GenericMachineManager.LabelType.OneLineHalfWidth, "labelItem" + index,
@@ -57,8 +52,8 @@ namespace Jazornowsky.QuantumStorage
             }
 
             {
-                int line = items.Count() / 5;
-                int column = items.Count() % 5;
+                var line = items.Count() / 5;
+                var column = items.Count() % 5;
                 manager.AddIcon("iconItem" + items.Count, "empty", Color.white, column * itemWidth + 10,
                     line * itemHeight + itemRowStart + 10);
                 manager.AddLabel(GenericMachineManager.LabelType.OneLineHalfWidth,
@@ -78,18 +73,14 @@ namespace Jazornowsky.QuantumStorage
             }
 
             if (quantumIoPort.GetController().GetItems().Count != SlotCount)
-            {
                 Redraw(targetEntity);
-            }
             else
-            {
                 WindowUpdate(quantumIoPort.GetController());
-            }
         }
 
         private void WindowUpdate(QuantumStorageControllerMachine quantumStorageController)
         {
-            List<ItemBase> items = quantumStorageController.GetItems();
+            var items = quantumStorageController.GetItems();
 
             if (quantumStorageController.HasPower())
             {
@@ -103,41 +94,39 @@ namespace Jazornowsky.QuantumStorage
 
             if (!quantumStorageController.HasPower())
             {
-                manager.UpdateLabel(StorageSizeLabel, String.Empty, Color.white);
+                manager.UpdateLabel(StorageSizeLabel, string.Empty, Color.white);
                 manager.UpdateLabel(StatusLabel, "LOW POWER", Color.red);
             }
 
             if (!quantumStorageController.IsOperating())
             {
-                manager.UpdateLabel(StorageSizeLabel, String.Empty, Color.white);
+                manager.UpdateLabel(StorageSizeLabel, string.Empty, Color.white);
                 manager.UpdateLabel(StatusLabel, "ERROR - ANOTHER CONTROLLER DETECTED", Color.red);
             }
 
-            for (int index = 0; index < items.Count; index++)
+            for (var index = 0; index < items.Count; index++)
             {
                 if (!quantumStorageController.IsOperating())
                 {
                     manager.UpdateIcon("iconItem" + index, "empty", Color.white);
-                    manager.UpdateLabel("labelItem" + index, String.Empty, Color.white);
+                    manager.UpdateLabel("labelItem" + index, string.Empty, Color.white);
                     manager.UpdateIcon("iconItem" + items.Count, "empty", Color.white);
-                    manager.UpdateLabel("labelItem" + items.Count, String.Empty, Color.white);
+                    manager.UpdateLabel("labelItem" + items.Count, string.Empty, Color.white);
                     continue;
                 }
-                else
-                {
-                    manager.UpdateIcon("iconItem" + items.Count, "empty", Color.white);
-                }
 
-                ItemBase itemBase = items[index];
+                manager.UpdateIcon("iconItem" + items.Count, "empty", Color.white);
+
+                var itemBase = items[index];
                 if (itemBase != null)
                 {
-                    string itemIcon = ItemManager.GetItemIcon(itemBase);
-                    int currentStackSize = ItemManager.GetCurrentStackSize(itemBase);
+                    var itemIcon = ItemManager.GetItemIcon(itemBase);
+                    var currentStackSize = ItemManager.GetCurrentStackSize(itemBase);
 
-                    string label = currentStackSize != 100
+                    var label = currentStackSize != 100
                         ? (currentStackSize >= 10
-                            ? " " + currentStackSize.ToString()
-                            : "   " + currentStackSize.ToString())
+                            ? " " + currentStackSize
+                            : "   " + currentStackSize)
                         : currentStackSize.ToString();
                     manager.UpdateIcon("iconItem" + index, itemIcon, Color.white);
                     manager.UpdateLabel("labelItem" + index, label, Color.white);
@@ -150,20 +139,15 @@ namespace Jazornowsky.QuantumStorage
         public override void HandleItemDrag(string name, ItemBase draggedItem,
             DragAndDropManager.DragRemoveItem dragDelegate, SegmentEntity targetEntity)
         {
-            QuantumIoPortMachine quantumIoPort = targetEntity as QuantumIoPortMachine;
+            var quantumIoPort = targetEntity as QuantumIoPortMachine;
             var controller = quantumIoPort.GetController();
-            if (controller == null || !controller.IsOperating() || controller.IsFull())
-            {
-                return;
-            }
+            if (controller == null || !controller.IsOperating() || controller.IsFull()) return;
 
-            ItemBase itemToStore = ItemManager.CloneItem(draggedItem);
-            int currentStackSize = ItemManager.GetCurrentStackSize(itemToStore);
+            var itemToStore = ItemManager.CloneItem(draggedItem);
+            var currentStackSize = ItemManager.GetCurrentStackSize(itemToStore);
 
             if (controller.GetRemainigCapacity() < currentStackSize)
-            {
                 ItemManager.SetItemCount(itemToStore, controller.GetRemainigCapacity());
-            }
 
             StoreItem(WorldScript.mLocalPlayer, controller, itemToStore);
             AudioHUDManager.instance.OrePickup();
@@ -181,63 +165,43 @@ namespace Jazornowsky.QuantumStorage
             var itemToStoreCopy = itemToStore.NewInstance();
             if (player == WorldScript.mLocalPlayer &&
                 !WorldScript.mLocalPlayer.mInventory.RemoveItemByExample(itemToStore, true))
-            {
                 return;
-            }
 
             quantumStorageController.AddItem(ref itemToStore);
             quantumStorageController.Dirty = true;
 
             if (itemToStore != null && itemToStore.GetAmount() > 0)
-            {
                 if (player == WorldScript.mLocalPlayer)
-                {
                     WorldScript.mLocalPlayer.mInventory.AddItem(itemToStore);
-                }
-            }
 
 
             if (!WorldScript.mbIsServer)
-            {
                 NetworkManager.instance.SendInterfaceCommand(QuantumStorageMod.QuantumIoPortWindowKey,
                     "StoreItem",
                     null, itemToStoreCopy, quantumStorageController, 0.0f);
-            }
         }
 
         public override bool ButtonClicked(string name, SegmentEntity targetEntity)
         {
-            QuantumIoPortMachine quantumIoPort = targetEntity as QuantumIoPortMachine;
+            var quantumIoPort = targetEntity as QuantumIoPortMachine;
             var controller = quantumIoPort.GetController();
-            if (controller == null || !controller.IsOperating())
-            {
-                return false;
-            }
+            if (controller == null || !controller.IsOperating()) return false;
 
             if (name.Contains("iconItem"))
             {
                 int.TryParse(name.Replace("iconItem", string.Empty), out var itemSlot);
                 if (itemSlot > -1 && itemSlot < SlotCount)
                 {
-                    int amount = 100;
+                    var amount = 100;
                     if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
-                    {
                         amount = 10;
-                    }
-                    else if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
-                    {
-                        amount = 1;
-                    }
+                    else if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) amount = 1;
 
-                    ItemBase itemBase = ItemManager.CloneItem(controller.GetItem(itemSlot));
+                    var itemBase = ItemManager.CloneItem(controller.GetItem(itemSlot));
                     if (amount < ItemManager.GetCurrentStackSize(itemBase))
-                    {
                         ItemManager.SetItemCount(itemBase, amount);
-                    }
                     else
-                    {
                         amount = ItemManager.GetCurrentStackSize(itemBase);
-                    }
 
                     if (TakeItem(WorldScript.mLocalPlayer, controller, itemBase))
                     {
@@ -255,7 +219,7 @@ namespace Jazornowsky.QuantumStorage
             ItemBase itemBase)
         {
             var itemBaseCopy = itemBase.NewInstance();
-            int amount = itemBase.GetAmount();
+            var amount = itemBase.GetAmount();
             quantumStorageController.TakeItem(ref itemBase);
 
             itemBase.SetAmount(amount - itemBase.GetAmount());
@@ -264,12 +228,10 @@ namespace Jazornowsky.QuantumStorage
             {
                 quantumStorageController.AddItem(ref itemBase);
                 if (itemBase.GetAmount() > 0)
-                {
                     ItemManager.instance.DropItem(itemBase,
                         WorldScript.mLocalPlayer.mnWorldX, WorldScript.mLocalPlayer.mnWorldY,
                         WorldScript.mLocalPlayer.mnWorldZ,
                         Vector3.zero);
-                }
 
                 return false;
             }
@@ -277,23 +239,18 @@ namespace Jazornowsky.QuantumStorage
             quantumStorageController.Dirty = true;
 
             if (!WorldScript.mbIsServer)
-            {
                 NetworkManager.instance.SendInterfaceCommand(QuantumStorageMod.QuantumIoPortWindowKey,
                     "TakeItem",
                     null, itemBaseCopy, quantumStorageController, 0.0f);
-            }
 
             return true;
         }
 
         public override void ButtonEnter(string name, SegmentEntity targetEntity)
         {
-            QuantumIoPortMachine quantumIoPort = targetEntity as QuantumIoPortMachine;
+            var quantumIoPort = targetEntity as QuantumIoPortMachine;
             var controller = quantumIoPort.GetController();
-            if (controller == null || !controller.IsOperating())
-            {
-                return;
-            }
+            if (controller == null || !controller.IsOperating()) return;
 
             if (name.Contains("iconItem"))
             {
@@ -303,10 +260,7 @@ namespace Jazornowsky.QuantumStorage
                     var item = controller.GetItem(slot);
 
 
-                    if (item == null)
-                    {
-                        return;
-                    }
+                    if (item == null) return;
 
                     if (HotBarManager.mbInited)
                     {
@@ -314,24 +268,17 @@ namespace Jazornowsky.QuantumStorage
                     }
                     else
                     {
-                        if (!SurvivalHotBarManager.mbInited)
-                        {
-                            return;
-                        }
+                        if (!SurvivalHotBarManager.mbInited) return;
 
-                        string name1 = WorldScript.mLocalPlayer.mResearch.IsKnown(item)
+                        var name1 = WorldScript.mLocalPlayer.mResearch.IsKnown(item)
                             ? ItemManager.GetItemName(item)
                             : PersistentSettings.GetString("Unknown_Material");
-                        int currentStackSize = ItemManager.GetCurrentStackSize(item);
+                        var currentStackSize = ItemManager.GetCurrentStackSize(item);
                         if (currentStackSize > 1)
-                        {
                             SurvivalHotBarManager.SetCurrentBlockLabel(string.Format("{0} {1}",
-                                (object) currentStackSize, (object) name1));
-                        }
+                                currentStackSize, name1));
                         else
-                        {
                             SurvivalHotBarManager.SetCurrentBlockLabel(name1);
-                        }
                     }
                 }
             }
@@ -339,33 +286,28 @@ namespace Jazornowsky.QuantumStorage
 
         public static NetworkInterfaceResponse HandleNetworkCommand(Player player, NetworkInterfaceCommand nic)
         {
-            if (!(nic.target is QuantumStorageControllerMachine target))
-            {
-                return null;
-            }
+            if (!(nic.target is QuantumStorageControllerMachine target)) return null;
 
-            string command = nic.command;
+            var command = nic.command;
             if (command != null)
             {
-                Dictionary<string, int> dictionary = new Dictionary<string, int>(2);
+                var dictionary = new Dictionary<string, int>(2);
                 dictionary.Add("TakeItem", 1);
                 dictionary.Add("StoreItem", 2);
 
                 if (dictionary.TryGetValue(command, out var num))
-                {
                     switch (num)
                     {
                         case 1:
-                            QuantumIoPortWindow.TakeItem(player, target, nic.itemContext);
+                            TakeItem(player, target, nic.itemContext);
                             break;
                         case 2:
-                            QuantumIoPortWindow.StoreItem(player, target, nic.itemContext);
+                            StoreItem(player, target, nic.itemContext);
                             break;
                     }
-                }
             }
 
-            NetworkInterfaceResponse interfaceResponse = new NetworkInterfaceResponse();
+            var interfaceResponse = new NetworkInterfaceResponse();
             interfaceResponse.entity = target;
             interfaceResponse.inventory = player.mInventory;
             return interfaceResponse;
