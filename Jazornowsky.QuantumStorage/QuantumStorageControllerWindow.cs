@@ -112,26 +112,32 @@ namespace Jazornowsky.QuantumStorage
                     controller.GetMaxCapacity(),
                     Color.white);
 
+                manager.UpdateLabel(InputStatusLabel,
+                    controller.IsInputEnabled() ? "Input enabled" : "Input disabled", Color.white);
+
+                manager.UpdateLabel(OutputStatusLabel,
+                    controller.IsOutputEnabled() ? "Output enabled" : "Output disabled", Color.white);
+
                 manager.UpdateLabel(StatusLabel, "POWER OK", Color.white);
             }
 
             if (!controller.HasPower())
             {
                 manager.UpdateLabel(StorageSizeLabel, string.Empty, Color.white);
+                manager.UpdateLabel(InputStatusLabel, string.Empty, Color.white);
+                manager.UpdateLabel(OutputStatusLabel, string.Empty, Color.white);
+                manager.UpdateIcon(InputRuleItemIcon, "empty", Color.white);
                 manager.UpdateLabel(StatusLabel, "LOW POWER", Color.red);
             }
 
-            if (!controller.IsOperating())
+            if (controller.HasPower() && !controller.IsOperating())
             {
                 manager.UpdateLabel(StorageSizeLabel, string.Empty, Color.white);
+                manager.UpdateLabel(InputStatusLabel, string.Empty, Color.white);
+                manager.UpdateLabel(OutputStatusLabel, string.Empty, Color.white);
+                manager.UpdateIcon(InputRuleItemIcon, "empty", Color.white);
                 manager.UpdateLabel(StatusLabel, "ERROR - ANOTHER CONTROLLER DETECTED", Color.red);
             }
-
-            manager.UpdateLabel(InputStatusLabel,
-                controller.IsInputEnabled() ? "Input enabled" : "Input disabled", Color.white);
-
-            manager.UpdateLabel(OutputStatusLabel,
-                controller.IsOutputEnabled() ? "Output enabled" : "Output disabled", Color.white);
 
             for (int i = 0; i < controller.GetItemInputRules().Count; i++)
             {
