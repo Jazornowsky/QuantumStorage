@@ -26,49 +26,61 @@ namespace Jazornowsky.QuantumStorage.service
 
         public void UpdateStorage()
         {
-            IQuantumStorage connectedStorage = GetConnectedStorage();
+            SegmentEntity connectedStorage = GetConnectedStorage();
             if (connectedStorage != null)
             {
                 List<ItemBase> items = new List<ItemBase>();
-                List<IQuantumStorage> storages = new List<IQuantumStorage> {connectedStorage};
-                List<IQuantumIo> ios = new List<IQuantumIo>();
-                connectedStorage.GetConnectedStorages(ref storages, ref ios);
-                _machineStorage.StorageBlockCount = storages.Count;
+                List<SegmentEntity> segmentsEntity = new List<SegmentEntity> {connectedStorage};
+                (connectedStorage as IQuantumStorage).GetConnectedSegments(ref segmentsEntity);
+                _machineStorage.StorageBlockCount = 0;
                 _machineStorage.MaxCapacity = 0;
                 _machineStorage.ItemCount = 0;
-                foreach (var storage in storages)
+                int controllerCount = 0;
+                foreach (var segment in segmentsEntity)
                 {
-                    _machineStorage.MaxCapacity += storage.GetCapacity();
-                    _machineStorage.ItemCount += storage.GetItemCount();
-                    items.AddRange(storage.GetItems());
+                    if (segment is IQuantumStorage storageEntity)
+                    {
+                        _machineStorage.StorageBlockCount++;
+                        _machineStorage.MaxCapacity += storageEntity.GetCapacity();
+                        _machineStorage.ItemCount += storageEntity.GetItemCount();
+                        items.AddRange(storageEntity.GetItems());
+                    } else if (segment is IQuantumIo ioEntity)
+                    {
+                        ioEntity.SetControllerPos(_quantumStorageController.mnX, _quantumStorageController.mnY, _quantumStorageController.mnZ);
+                    } else if (segment is QuantumStorageControllerMachine)
+                    {
+                        controllerCount++;
+                    }
                 }
 
-                foreach (var quantumIo in ios)
+                if (controllerCount <= 1)
                 {
-                    quantumIo.SetControllerPos(_quantumStorageController.mnX, _quantumStorageController.mnY, _quantumStorageController.mnZ);
+                    _quantumStorageController._anotherControllerDetected = false;
+                }
+                else
+                {
+                    _quantumStorageController._anotherControllerDetected = true;
                 }
 
                 _machineStorage.Items = items;
             }
         }
 
-        private IQuantumStorage GetConnectedStorage()
+        private SegmentEntity GetConnectedStorage()
         {
             PositionUtils.GetSegmentPos(_machineSides.Back,
                 _quantumStorageController.mnX, _quantumStorageController.mnY, _quantumStorageController.mnZ,
                 out long segmentX, out long segmentY, out long segmentZ);
             Segment segment = _quantumStorageController.AttemptGetSegment(segmentX, segmentY, segmentZ);
-            if (segment == null)
+            if (segment == null || !CubeHelper.HasEntity(segment.GetCube(segmentX, segmentY, segmentZ)))
             {
                 return null;
             }
 
-            if (CubeHelper.HasEntity(segment.GetCube(segmentX, segmentY, segmentZ)))
+            var segmentEntity = segment.SearchEntity(segmentX, segmentY, segmentZ);
+            if (segmentEntity is IQuantumStorage)
             {
-                if (segment.SearchEntity(segmentX, segmentY, segmentZ) is IQuantumStorage quantumStorage)
-                {
-                    return quantumStorage;
-                }
+                return segmentEntity;
             }
 
             return null;
@@ -76,17 +88,29 @@ namespace Jazornowsky.QuantumStorage.service
 
         public void AddItem(ref ItemBase item)
         {
-            IQuantumStorage storage = GetConnectedStorage();
-            List<IQuantumStorage> storages = new List<IQuantumStorage>(_machineStorage.StorageBlockCount);
-            storages.Add(storage);
-            storage.GetConnectedStorages(ref storages);
-            foreach (IQuantumStorage connectedStorage in storages)
+            SegmentEntity adjacentEntity = GetConnectedStorage();
+            if (adjacentEntity == null)
             {
-                if (connectedStorage.IsFull())
+                return;
+            }
+
+            List<SegmentEntity> segmentEntities = new List<SegmentEntity>();
+            segmentEntities.Add(adjacentEntity);
+            (adjacentEntity as IQuantumStorage).GetConnectedSegments(ref segmentEntities);
+
+            foreach (SegmentEntity segmentEntity in segmentEntities)
+            {
+                if (!(segmentEntity is IQuantumStorage storageEntity))
                 {
                     continue;
                 }
-                connectedStorage.AddItem(ref item);
+
+                if (storageEntity.IsFull())
+                {
+                    continue;
+                }
+
+                storageEntity.AddItem(ref item);
                 if (item == null || item.GetAmount() == 0)
                 {
                     break;
@@ -98,16 +122,22 @@ namespace Jazornowsky.QuantumStorage.service
 
         public void TakeItem(ref ItemBase item)
         {
-            var adjacentStorage = GetConnectedStorage();
-            List<IQuantumStorage> storages = new List<IQuantumStorage>(_machineStorage.StorageBlockCount);
-            storages.Add(adjacentStorage);
-            LogUtils.LogDebug(LogName, "StorageCount: " + storages.Count);
-            adjacentStorage.GetConnectedStorages(ref storages);
-            foreach (var connectedStorage in storages)
+            var adjacentEntity = GetConnectedStorage();
+            if (adjacentEntity == null)
             {
-                LogUtils.LogDebug(LogName,
-                    "Trying to take item from storage with item count: " + connectedStorage.GetItemCount());
-                var itemNewInstance = connectedStorage.TakeItem(item);
+                return;
+            }
+            List<SegmentEntity> adjacentSegmentEntities = new List<SegmentEntity>();
+            adjacentSegmentEntities.Add(adjacentEntity);
+            (adjacentSegmentEntities as IQuantumStorage).GetConnectedSegments(ref adjacentSegmentEntities);
+            foreach (var segmentEntity in adjacentSegmentEntities)
+            {
+                if (!(segmentEntity is IQuantumStorage storageEntity))
+                {
+                    continue;
+                }
+
+                var itemNewInstance = storageEntity.TakeItem(item);
                 if (itemNewInstance != null && itemNewInstance.GetAmount() == 0)
                 {
                     item = itemNewInstance;

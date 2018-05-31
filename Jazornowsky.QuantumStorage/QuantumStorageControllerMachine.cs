@@ -32,7 +32,7 @@ namespace Jazornowsky.QuantumStorage
         private readonly MachineStorage _machineStorage = new MachineStorage();
 
         private bool _notifications = true;
-        private bool _anotherControllerDetected;
+        public bool _anotherControllerDetected;
         private float _secondsPassedFromLastNetworkScan = 0;
         private float _secondsPassedFromPowerConsumption = 0;
         private float _secondsPassedFromLowPowerMission = 0;
@@ -85,11 +85,6 @@ namespace Jazornowsky.QuantumStorage
 
         public override void LowFrequencyUpdate()
         {
-            if (_anotherControllerDetected)
-            {
-                return;
-            }
-
             if (!_machinePower.HasPower())
             {
                 ProcessNotification(true, "Quantum Storage Controller", ref _secondsPassedFromLowPowerMission,
@@ -97,9 +92,21 @@ namespace Jazornowsky.QuantumStorage
                 return;
             }
 
+            if (_anotherControllerDetected)
+            {
+                ProcessNetworkScan();
+                return;
+            }
+
             ProcessNotification(_machineStorage.IsFull(), "Quantum Storage", ref _secondsPassedFromStorageFullMission,
                 StorageFullMissionPeriod, MissionUtils.AddLowStorageMission);
 
+            ProcessPowerConsumption();
+            ProcessNetworkScan();
+        }
+
+        private void ProcessPowerConsumption()
+        {
             _secondsPassedFromPowerConsumption += LowFrequencyThread.mrPreviousUpdateTimeStep;
             if ((_secondsPassedFromPowerConsumption >= PowerConsumptionPeriod))
             {
@@ -107,7 +114,10 @@ namespace Jazornowsky.QuantumStorage
                 _machinePower.PreviousUpdatePower = _machinePower.CurrentPower;
                 _secondsPassedFromPowerConsumption = 0;
             }
+        }
 
+        private void ProcessNetworkScan()
+        {
             _secondsPassedFromLastNetworkScan += LowFrequencyThread.mrPreviousUpdateTimeStep;
             if (_secondsPassedFromLastNetworkScan >= NetworkScanPeriod || Dirty)
             {

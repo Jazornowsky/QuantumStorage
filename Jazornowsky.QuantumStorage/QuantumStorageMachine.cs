@@ -51,27 +51,21 @@ namespace Jazornowsky.QuantumStorage
             return _items.GetItemCount();
         }
 
-        public List<IQuantumStorage> GetConnectedStorages(ref List<IQuantumStorage> storages)
+        public List<SegmentEntity> GetConnectedSegments(ref List<SegmentEntity> storages)
         {
-            var quantumIos = new List<IQuantumIo>();
-            return GetConnectedStorages(ref storages, ref quantumIos);
+            List<SegmentEntity> adjacentSegments = new List<SegmentEntity>();
+
+            ProcessConnectedStorage(MachineSides.Front, ref storages, adjacentSegments);
+            ProcessConnectedStorage(MachineSides.Back, ref storages, adjacentSegments);
+            ProcessConnectedStorage(MachineSides.Right, ref storages, adjacentSegments);
+            ProcessConnectedStorage(MachineSides.Left, ref storages, adjacentSegments);
+            ProcessConnectedStorage(MachineSides.Top, ref storages, adjacentSegments);
+            ProcessConnectedStorage(MachineSides.Bottom, ref storages, adjacentSegments);
+
+            return adjacentSegments;
         }
 
-        public List<IQuantumStorage> GetConnectedStorages(ref List<IQuantumStorage> storages, ref List<IQuantumIo> quantumIos)
-        {
-            List<IQuantumStorage> adjacentStorages = new List<IQuantumStorage>();
-
-            ProcessConnectedStorage(MachineSides.Front, ref storages, adjacentStorages, ref quantumIos);
-            ProcessConnectedStorage(MachineSides.Back, ref storages, adjacentStorages, ref quantumIos);
-            ProcessConnectedStorage(MachineSides.Right, ref storages, adjacentStorages, ref quantumIos);
-            ProcessConnectedStorage(MachineSides.Left, ref storages, adjacentStorages, ref quantumIos);
-            ProcessConnectedStorage(MachineSides.Top, ref storages, adjacentStorages, ref quantumIos);
-            ProcessConnectedStorage(MachineSides.Bottom, ref storages, adjacentStorages, ref quantumIos);
-
-            return adjacentStorages;
-        }
-
-        private void ProcessConnectedStorage(Vector3 side, ref List<IQuantumStorage> storages, List<IQuantumStorage> adjacentStorages, ref List<IQuantumIo> quantumIos)
+        private void ProcessConnectedStorage(Vector3 side, ref List<SegmentEntity> segments, List<SegmentEntity> adjacentSegments)
         {
             PositionUtils.GetSegmentPos(side, mnX, mnY, mnZ, out long segmentX, out long segmentY,
                 out long segmentZ);
@@ -79,20 +73,20 @@ namespace Jazornowsky.QuantumStorage
             if (adjacentSegment != null &&
                 CubeHelper.HasEntity(adjacentSegment.GetCube(segmentX, segmentY, segmentZ)))
             {
-                var segment = adjacentSegment.SearchEntity(segmentX, segmentY, segmentZ);
-                if (segment is IQuantumStorage adjacentStorage)
+                var segmentEntity = adjacentSegment.SearchEntity(segmentX, segmentY, segmentZ);
+                if (segmentEntity is IQuantumStorage quantumStorageEntity)
                 {
-                    adjacentStorages.Add(adjacentStorage);
-                    if (!storages.Contains(adjacentStorage))
+                    adjacentSegments.Add(segmentEntity);
+                    if (!segments.Contains(segmentEntity))
                     {
-                        storages.Add(adjacentStorage);
-                        adjacentStorage.GetConnectedStorages(ref storages, ref quantumIos);
+                        segments.Add(segmentEntity);
+                        quantumStorageEntity.GetConnectedSegments(ref segments);
                     }
-                } else if (quantumIos != null && adjacentSegment.SearchEntity(segmentX, segmentY, segmentZ) is IQuantumIo adjacentIo)
+                } else if (segmentEntity is IQuantumIo || segmentEntity is QuantumStorageControllerMachine)
                 {
-                    if (!quantumIos.Contains(adjacentIo))
+                    if (!segments.Contains(segmentEntity))
                     {
-                        quantumIos.Add(adjacentIo);
+                        segments.Add(segmentEntity);
                     }
                 }
             }
