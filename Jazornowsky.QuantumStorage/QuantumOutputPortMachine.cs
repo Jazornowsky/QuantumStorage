@@ -123,8 +123,7 @@ namespace Jazornowsky.QuantumStorage
             {
                 return;
             }
-            
-            
+
             var itemInStorage = StorageIoService.GetStorageController().GetItems()
                 .Find(x => x.Compare(exemplarCopy));
 
@@ -155,7 +154,7 @@ namespace Jazornowsky.QuantumStorage
             }
             else
             {
-                if (lItem.mnItemID == Exemplar.mnItemID)
+                if (Exemplar != null && lItem.mnItemID == Exemplar.mnItemID)
                 {
                     return;
                 }
