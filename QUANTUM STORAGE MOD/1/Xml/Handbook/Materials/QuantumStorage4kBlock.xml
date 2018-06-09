@@ -1,0 +1,43 @@
+<MaterialEntry>
+	<Key>Jazornowsky.QuantumStorage4kBlock</Key>
+	<Pages>
+		<Page>
+			<Paragraphs>
+				<Title>
+					<Text>Description</Text>
+				</Title>
+				<Icon>
+					<Name>Jazornowsky.QuantumStorage</Name>
+					<Alignment>Center</Alignment>
+				</Icon>
+				<Paragraph>
+					<Text>
+						This is main storage block for Quantum Storage System (QSS).
+						Can hold up to 4k items.
+						
+						WARNING!
+						Picking up block will destroy stored items!
+						This is partialy by desing - you can't just pickup bits of data.
+						Currently I don't see possibility to permanently save data to item, at least not this specific item data.
+					</Text>
+				</Paragraph>
+			</Paragraphs>
+		</Page>
+		<Page>
+			<Paragraphs>
+				<Title>
+					<Text>Placement</Text>
+				</Title>
+				<Icon>
+					<Name>Jazornowsky.QuantumStorage</Name>
+					<Alignment>Center</Alignment>
+				</Icon>
+				<Paragraph>
+					<Text>
+						This block can be connected to other Quantum Storage (to any side) or to back of Quantum Storage Controller.
+					</Text>
+				</Paragraph>
+			</Paragraphs>
+		</Page>
+	</Pages>
+</MaterialEntry>

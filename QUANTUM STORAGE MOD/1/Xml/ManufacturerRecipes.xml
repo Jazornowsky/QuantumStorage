@@ -25,11 +25,7 @@
 			<Research>Jazornowsky.QuantumStorageResearch</Research>
 		</ResearchRequirements>
 		<Description>Controller for Quantum Storage System (QSS).</Description>
-		<Hint>
-			Exactly one is required for QSS to operate.
-			To operate, must be connected with at least one Quantum Storage Block from the back.
-			Requires power to operate.
-		</Hint>
+		<Hint></Hint>
 	</CraftData>
 	
 	<CraftData>
@@ -52,12 +48,7 @@
 		<ResearchRequirements>
 			<Research>Jazornowsky.QuantumStorageResearch</Research>
 		</ResearchRequirements>
-		<Description>
-			Storage for Quantum Storage System (QSS).
-			Can Hold up to 1k items.
-			Must be connected to other Quantum Storage Block or directly to back of Quantum Storage Controller.
-		</Description>
-		<Hint>Storage for Quantum Storage System (QSS).</Hint>
+		<Hint></Hint>
 	</CraftData>
 	
 	<CraftData>
@@ -80,12 +71,7 @@
 		<ResearchRequirements>
 			<Research>Jazornowsky.QuantumStorageResearch</Research>
 		</ResearchRequirements>
-		<Description>
-			Storage for Quantum Storage System (QSS).
-			Can Hold up to 2k items.
-			Must be connected to other Quantum Storage Block or directly to back of Quantum Storage Controller.
-		</Description>
-		<Hint>Storage for Quantum Storage System (QSS).</Hint>
+		<Hint></Hint>
 	</CraftData>
 	
 	<CraftData>
@@ -108,12 +94,7 @@
 		<ResearchRequirements>
 			<Research>Jazornowsky.QuantumStorageResearch</Research>
 		</ResearchRequirements>
-		<Description>
-			Storage for Quantum Storage System (QSS).
-			Can Hold up to 4k items.
-			Must be connected to other Quantum Storage Block or directly to back of Quantum Storage Controller.
-		</Description>
-		<Hint>Storage for Quantum Storage System (QSS).</Hint>
+		<Hint></Hint>
 	</CraftData>
 	
 	<CraftData>
@@ -140,12 +121,7 @@
 		<ResearchRequirements>
 			<Research>Jazornowsky.QuantumStorageResearch</Research>
 		</ResearchRequirements>
-		<Description>
-			Provides direct storage access.
-		</Description>
-		<Hint>
-			Place next to Quantum Storage to access storage in Quantum Storage System.
-		</Hint>
+		<Hint></Hint>
 	</CraftData>
 	
 	<CraftData>
@@ -176,13 +152,7 @@
 		<ResearchRequirements>
 			<Research>Jazornowsky.QuantumStorageResearch</Research>
 		</ResearchRequirements>
-		<Description>
-			Outputs very fast, specified type of item from the Quantum Storage System.
-		</Description>
-		<Hint>
-			Place next to Quantum Storage to extract items.
-			Hole side outputs items.
-		</Hint>
+		<Hint></Hint>
 	</CraftData>
 	
 	<CraftData>
@@ -213,13 +183,7 @@
 		<ResearchRequirements>
 			<Research>Jazornowsky.QuantumStorageResearch</Research>
 		</ResearchRequirements>
-		<Description>
-			Insert items into the Quantum Storage System.
-		</Description>
-		<Hint>
-			Hole side should be connected to Quantum Storage.
-			Incoming items can be connected to back, left and right side.
-		</Hint>
+		<Hint></Hint>
 	</CraftData>
 	
 	<CraftData>

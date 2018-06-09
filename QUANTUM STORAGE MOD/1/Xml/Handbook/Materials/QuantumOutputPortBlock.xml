@@ -1,0 +1,39 @@
+<MaterialEntry>
+	<Key>Jazornowsky.QuantumOutputPortBlock</Key>
+	<Pages>
+		<Page>
+			<Paragraphs>
+				<Title>
+					<Text>Description</Text>
+				</Title>
+				<Icon>
+					<Name>Jazornowsky.QuantumOutputPort</Name>
+					<Alignment>Center</Alignment>
+				</Icon>
+				<Paragraph>
+					<Text>
+						This machine provides a way to output specific item from Quantum Storage System (QSS).
+						Currently does not require power, but this will change in future versions.
+					</Text>
+				</Paragraph>
+			</Paragraphs>
+		</Page>
+		<Page>
+			<Paragraphs>
+				<Title>
+					<Text>Placement</Text>
+				</Title>
+				<Icon>
+					<Name>Jazornowsky.QuantumOutputPort</Name>
+					<Alignment>Center</Alignment>
+				</Icon>
+				<Paragraph>
+					<Text>
+						Place next to Quantum Storage to extract items.
+						Hole side outputs items.
+					</Text>
+				</Paragraph>
+			</Paragraphs>
+		</Page>
+	</Pages>
+</MaterialEntry>

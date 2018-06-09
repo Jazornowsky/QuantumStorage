@@ -1,0 +1,68 @@
+<MaterialEntry>
+	<Key>Jazornowsky.QuantumStorageControllerBlock</Key>
+	<Pages>
+		<Page>
+			<Paragraphs>
+				<Title>
+					<Text>Description</Text>
+				</Title>
+				<Icon>
+					<Name>Jazornowsky.QuantumStorageController</Name>
+					<Alignment>Center</Alignment>
+				</Icon>
+				<Paragraph>
+					<Text>
+						This machine is the brain of Quantum Storage System (QSS) and provides configuration panel for it. QSS will not work without controller.
+						Requires power to operate.
+					</Text>
+				</Paragraph>
+			</Paragraphs>
+		</Page>
+		<Page>
+			<Paragraphs>
+				<Title>
+					<Text>Placement</Text>
+				</Title>
+				<Icon>
+					<Name>Jazornowsky.QuantumStorageController</Name>
+					<Alignment>Center</Alignment>
+				</Icon>
+				<Paragraph>
+					<Text>
+						Machine must be connected with Quantum Storage Block from the back.
+						This will guarantee proper communication with whole QSS.
+					</Text>
+				</Paragraph>
+			</Paragraphs>
+		</Page>
+		<Page>
+			<Paragraphs>
+				<Title>
+					<Text>Configuration</Text>
+				</Title>
+				<Icon>
+					<Name>Jazornowsky.QuantumStorageController</Name>
+					<Alignment>Center</Alignment>
+				</Icon>
+				<Paragraph>
+					<Text>
+						Quantums Storage Controller provides neat configuration options for QSS in one place. It also shows current QSS power status, item count, storage block count and warnings. Quantum Storage Controller also notifies user globally about power outage and lack of capacity in QSS. This can be disabled using Q key.
+						
+						The following configuration options are possible:
+						- ALLOW/BLOCK INPUT
+							anything comming to the system will allowed/blocked
+						- ALLOW/BLOCK OUTPUT
+							anything the system outputs will be allowed/block
+						- ADD INPUT ITEM RULE
+						
+						Input item rules are just limits of how much specific item can be stored in QSS.
+						This is similar to Mass Storage Stocking Port block.
+						Example:
+						If new rule is set for Iron Bar at value 400, no more than that value will be stored in system.
+						This limit does not apply to Quantum I/O Port.
+					</Text>
+				</Paragraph>
+			</Paragraphs>
+		</Page>
+	</Pages>
+</MaterialEntry>
