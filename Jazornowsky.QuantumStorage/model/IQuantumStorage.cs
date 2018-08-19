@@ -17,7 +17,7 @@ namespace Jazornowsky.QuantumStorage.model
 
         ItemBase TakeItem(ItemBase item);
 
-        void AddItem(ref ItemBase item);
+        void AddItem(ref ItemBase item, bool force = false);
 
         int GetItemCount();
 

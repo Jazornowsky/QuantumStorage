@@ -126,11 +126,21 @@ namespace Jazornowsky.QuantumStorage
 
             var itemInStorage = StorageIoService.GetStorageController().GetItems()
                 .Find(x => x.Compare(exemplarCopy));
-
-            if (itemInStorage != null && itemInStorage.GetAmount() > 0 &&
-                itemConsumer.TryDeliverItem(this, itemToGive, 0, 0, true))
+            if (itemInStorage == null || itemInStorage.GetAmount() <= 0)
             {
-                StorageIoService.GetStorageController().TakeItem(ref exemplarCopy);
+                return;
+            }
+
+            var itemTaken = StorageIoService.GetStorageController().TakeItem(ref exemplarCopy);
+            if (!itemTaken)
+            {
+                return;
+            }
+
+            if (!itemConsumer.TryDeliverItem(this, itemToGive, 0, 0, true))
+            {
+                exemplarCopy.SetAmount(1);
+                StorageIoService.GetStorageController().AddItem(ref exemplarCopy, true);
             }
         }
 

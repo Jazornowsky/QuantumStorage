@@ -86,11 +86,12 @@ namespace Jazornowsky.QuantumStorage.service
             return null;
         }
 
-        public void AddItem(ref ItemBase item)
+        public void AddItem(ref ItemBase item, bool force = false)
         {
             SegmentEntity adjacentEntity = GetConnectedStorage();
             if (adjacentEntity == null)
             {
+                LogUtils.LogDebug("Item delivery", "adjacentEntity == null");
                 return;
             }
 
@@ -98,6 +99,7 @@ namespace Jazornowsky.QuantumStorage.service
             segmentEntities.Add(adjacentEntity);
             (adjacentEntity as IQuantumStorage).GetConnectedSegments(ref segmentEntities);
 
+            var itemAdded = false;
             foreach (SegmentEntity segmentEntity in segmentEntities)
             {
                 if (!(segmentEntity is IQuantumStorage storageEntity))
@@ -105,27 +107,29 @@ namespace Jazornowsky.QuantumStorage.service
                     continue;
                 }
 
-                if (storageEntity.IsFull())
+                if (storageEntity.IsFull() && !force)
                 {
                     continue;
                 }
 
-                storageEntity.AddItem(ref item);
+                storageEntity.AddItem(ref item, force);
                 if (item == null || item.GetAmount() == 0)
                 {
+                    itemAdded = true;
                     break;
                 }
             }
+            LogUtils.LogDebug("Item delivery", "itemAdded == " + itemAdded);
 
             _quantumStorageController.Dirty = true;
         }
 
-        public void TakeItem(ref ItemBase item)
+        public bool TakeItem(ref ItemBase item)
         {
             var adjacentEntity = GetConnectedStorage();
             if (adjacentEntity == null)
             {
-                return;
+                return false;
             }
             List<SegmentEntity> adjacentSegmentEntities = new List<SegmentEntity>();
             adjacentSegmentEntities.Add(adjacentEntity);
@@ -141,9 +145,10 @@ namespace Jazornowsky.QuantumStorage.service
                 if (itemNewInstance != null && itemNewInstance.GetAmount() == 0)
                 {
                     item = itemNewInstance;
-                    return;
+                    return true;
                 }
             }
+            return false;
         }
     }
 }

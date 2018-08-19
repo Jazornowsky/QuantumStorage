@@ -77,9 +77,9 @@ namespace Jazornowsky.QuantumStorage
             return _machineStorage.Items;
         }
 
-        public void AddItem(ref ItemBase item)
+        public void AddItem(ref ItemBase item, bool force = false)
         {
-            _storageControllerService.AddItem(ref item);
+            _storageControllerService.AddItem(ref item, force);
         }
 
         public ItemBase GetItem(int index)
@@ -87,9 +87,9 @@ namespace Jazornowsky.QuantumStorage
             return _machineStorage.Items[index];
         }
 
-        public void TakeItem(ref ItemBase item)
+        public bool TakeItem(ref ItemBase item)
         {
-            _storageControllerService.TakeItem(ref item);
+            return _storageControllerService.TakeItem(ref item);
         }
 
         public void AddItemInputRule(ItemInputRule itemInputRule)
