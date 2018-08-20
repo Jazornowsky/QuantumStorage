@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Jazornowsky.QuantumStorage.model;
 using Jazornowsky.QuantumStorage.service;
 using Jazornowsky.QuantumStorage.utils;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Jazornowsky.QuantumStorage
 {
@@ -190,6 +184,24 @@ namespace Jazornowsky.QuantumStorage
             }
 
             return true;
+        }
+
+        public override void OnDelete()
+        {
+            if (!WorldScript.mbIsServer)
+            {
+                return;
+            }
+
+            System.Random random = new System.Random();
+            if (_incomingItem != null)
+            {
+                Vector3 velocity = new Vector3((float)random.NextDouble() - 0.5f, (float)random.NextDouble() - 0.5f, (float)random.NextDouble() - 0.5f);
+                ItemManager.instance.DropItem(_incomingItem, this.mnX, this.mnY, this.mnZ, velocity);
+                _incomingItem = null;
+            }
+
+            base.OnDelete();
         }
     }
 }

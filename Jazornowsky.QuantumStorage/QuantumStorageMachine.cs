@@ -104,16 +104,9 @@ namespace Jazornowsky.QuantumStorage
             return newItemInstance;
         }
 
-        public void AddItem(ref ItemBase item, bool force = false)
+        public void AddItem(ref ItemBase item)
         {
-            if (force)
-            {
-                item = item.AddListItem(ref _items, false);
-            } else
-            {
-                item = item.AddListItem(ref _items, false, _maxCapacity);
-            }
-            
+            item = item.AddListItem(ref _items, false, _maxCapacity);
             RequestImmediateNetworkUpdate();
         }
 

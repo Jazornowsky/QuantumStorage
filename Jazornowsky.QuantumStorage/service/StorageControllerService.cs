@@ -86,20 +86,18 @@ namespace Jazornowsky.QuantumStorage.service
             return null;
         }
 
-        public void AddItem(ref ItemBase item, bool force = false)
+        public void AddItem(ref ItemBase item)
         {
             SegmentEntity adjacentEntity = GetConnectedStorage();
             if (adjacentEntity == null)
             {
-                LogUtils.LogDebug("Item delivery", "adjacentEntity == null");
                 return;
             }
 
             List<SegmentEntity> segmentEntities = new List<SegmentEntity>();
             segmentEntities.Add(adjacentEntity);
             (adjacentEntity as IQuantumStorage).GetConnectedSegments(ref segmentEntities);
-
-            var itemAdded = false;
+            
             foreach (SegmentEntity segmentEntity in segmentEntities)
             {
                 if (!(segmentEntity is IQuantumStorage storageEntity))
@@ -107,19 +105,17 @@ namespace Jazornowsky.QuantumStorage.service
                     continue;
                 }
 
-                if (storageEntity.IsFull() && !force)
+                if (storageEntity.IsFull())
                 {
                     continue;
                 }
 
-                storageEntity.AddItem(ref item, force);
+                storageEntity.AddItem(ref item);
                 if (item == null || item.GetAmount() == 0)
                 {
-                    itemAdded = true;
                     break;
                 }
             }
-            LogUtils.LogDebug("Item delivery", "itemAdded == " + itemAdded);
 
             _quantumStorageController.Dirty = true;
         }

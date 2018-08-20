@@ -17,9 +17,12 @@ namespace Jazornowsky.QuantumStorage
         public static readonly string MachineName = "Quantum Output Port";
 
         public ItemBase Exemplar;
+        public bool ItemTaken; // is item taken from Quantum Storage and currently held by QuantumOutputPort
+
 
         public QuantumOutputPortMachine(MachineEntityCreationParameters parameters) : base(parameters)
         {
+            ItemTaken = false;
         }
 
         public override string GetPopupText()
@@ -73,15 +76,16 @@ namespace Jazornowsky.QuantumStorage
         }
 
         public bool TryTakeItem(StorageUserInterface sourceEntity, out ItemBase item, out ushort cubeType,
-            out ushort cubeValue,
-            bool sendImmediateNetworkUpdate)
+            out ushort cubeValue, bool sendImmediateNetworkUpdate)
         {
             item = null;
             cubeType = 0;
             cubeValue = 0;
+            LogUtils.LogDebug("TryTakeItemQ", "TryTakeItem Start");
 
             if (Exemplar == null)
             {
+                LogUtils.LogDebug("TryTakeItemQ", "Exemplar not set");
                 return false;
             }
 
@@ -124,23 +128,26 @@ namespace Jazornowsky.QuantumStorage
                 return;
             }
 
-            var itemInStorage = StorageIoService.GetStorageController().GetItems()
-                .Find(x => x.Compare(exemplarCopy));
-            if (itemInStorage == null || itemInStorage.GetAmount() <= 0)
+            if (!ItemTaken)
             {
-                return;
-            }
+                var itemInStorage = StorageIoService.GetStorageController().GetItems()
+                    .Find(x => x.Compare(exemplarCopy));
+                if (itemInStorage == null || itemInStorage.GetAmount() <= 0)
+                {
+                    return;
+                }
 
-            var itemTaken = StorageIoService.GetStorageController().TakeItem(ref exemplarCopy);
-            if (!itemTaken)
-            {
-                return;
-            }
-
-            if (!itemConsumer.TryDeliverItem(this, itemToGive, 0, 0, true))
-            {
                 exemplarCopy.SetAmount(1);
-                StorageIoService.GetStorageController().AddItem(ref exemplarCopy, true);
+                ItemTaken = StorageIoService.GetStorageController().TakeItem(ref exemplarCopy);
+                if (!ItemTaken)
+                {
+                    return;
+                }
+            }
+
+            if (itemConsumer.TryDeliverItem(this, itemToGive, 0, 0, true))
+            {
+                ItemTaken = false;
             }
         }
 
@@ -241,6 +248,25 @@ namespace Jazornowsky.QuantumStorage
         public override void Read(BinaryReader reader, int entityVersion)
         {
             Exemplar = ItemFile.DeserialiseItem(reader);
+        }
+
+        public override void OnDelete()
+        {
+            if (!WorldScript.mbIsServer)
+            {
+                return;
+            }
+
+            System.Random random = new System.Random();
+            if (ItemTaken && Exemplar != null)
+            {
+                Vector3 velocity = new Vector3((float)random.NextDouble() - 0.5f, (float)random.NextDouble() - 0.5f, (float)random.NextDouble() - 0.5f);
+                ItemManager.instance.DropItem(Exemplar, this.mnX, this.mnY, this.mnZ, velocity);
+                Exemplar = null;
+                ItemTaken = false;
+            }
+
+            base.OnDelete();
         }
     }
 }
