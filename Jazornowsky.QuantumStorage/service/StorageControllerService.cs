@@ -86,12 +86,12 @@ namespace Jazornowsky.QuantumStorage.service
             return null;
         }
 
-        public void AddItem(ref ItemBase item)
+        public bool AddItem(ref ItemBase item)
         {
             SegmentEntity adjacentEntity = GetConnectedStorage();
             if (adjacentEntity == null)
             {
-                return;
+                return false;
             }
 
             List<SegmentEntity> segmentEntities = new List<SegmentEntity>();
@@ -113,11 +113,12 @@ namespace Jazornowsky.QuantumStorage.service
                 storageEntity.AddItem(ref item);
                 if (item == null || item.GetAmount() == 0)
                 {
-                    break;
+                    _quantumStorageController.Dirty = true;
+                    return true;
                 }
             }
 
-            _quantumStorageController.Dirty = true;
+            return false;
         }
 
         public bool TakeItem(ref ItemBase item)

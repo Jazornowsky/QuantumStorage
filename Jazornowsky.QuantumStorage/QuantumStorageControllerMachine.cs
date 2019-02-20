@@ -77,9 +77,9 @@ namespace Jazornowsky.QuantumStorage
             return _machineStorage.Items;
         }
 
-        public void AddItem(ref ItemBase item)
+        public bool AddItem(ref ItemBase item)
         {
-            _storageControllerService.AddItem(ref item);
+            return _storageControllerService.AddItem(ref item);
         }
 
         public ItemBase GetItem(int index)
@@ -103,6 +103,7 @@ namespace Jazornowsky.QuantumStorage
             }
 
             _itemInputRules.Add(itemInputRule);
+            MarkDirtyDelayed();
         }
 
         public void RemoveItemInputRule(ItemInputRule itemInputRule)
@@ -120,6 +121,7 @@ namespace Jazornowsky.QuantumStorage
             {
                 _itemInputRules.Remove(itemRuletoRemove);
             }
+            MarkDirtyDelayed();
         }
 
         public void IncreaseItemInputRuleLimit(ItemInputRule itemInputRule)
@@ -135,6 +137,7 @@ namespace Jazornowsky.QuantumStorage
                     }
                 }
             }
+            MarkDirtyDelayed();
         }
 
         public void ReduceItemInputRuleLimit(ItemInputRule itemInputRule)
@@ -150,6 +153,7 @@ namespace Jazornowsky.QuantumStorage
                     }
                 }
             }
+            MarkDirtyDelayed();
         }
 
         public int GetItemLimit(ItemBase item)
@@ -366,6 +370,7 @@ namespace Jazornowsky.QuantumStorage
         public void ToggleInput()
         {
             _inputEnabled = !_inputEnabled;
+            MarkDirtyDelayed();
         }
 
         public bool IsInputEnabled()
@@ -376,6 +381,7 @@ namespace Jazornowsky.QuantumStorage
         public void ToggleOutput()
         {
             _outputEnabled = !_outputEnabled;
+            MarkDirtyDelayed();
         }
 
         public bool IsOutputEnabled()

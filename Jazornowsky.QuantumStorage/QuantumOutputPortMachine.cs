@@ -148,6 +148,7 @@ namespace Jazornowsky.QuantumStorage
             if (itemConsumer.TryDeliverItem(this, itemToGive, 0, 0, true))
             {
                 ItemTaken = false;
+                MarkDirtyDelayed();
             }
         }
 
@@ -243,11 +244,16 @@ namespace Jazornowsky.QuantumStorage
         public override void Write(BinaryWriter writer)
         {
             ItemFile.SerialiseItem(Exemplar, writer);
+            writer.Write(ItemTaken);
         }
 
         public override void Read(BinaryReader reader, int entityVersion)
         {
             Exemplar = ItemFile.DeserialiseItem(reader);
+            if (reader.BaseStream.Position != reader.BaseStream.Length)
+            {
+                ItemTaken = reader.ReadBoolean();
+            }
         }
 
         public override void OnDelete()

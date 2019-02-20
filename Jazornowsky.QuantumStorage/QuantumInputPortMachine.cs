@@ -43,6 +43,9 @@ namespace Jazornowsky.QuantumStorage
 
         public override void LowFrequencyUpdate()
         {
+            if (!WorldScript.mbIsServer) {
+                return;
+            }
             var storageController = StorageIoService.GetStorageController();
             if (storageController == null || _incomingItem == null || !storageController.IsOperating() || !storageController.IsInputEnabled())
             {
@@ -67,6 +70,9 @@ namespace Jazornowsky.QuantumStorage
             if (_incomingItem == null || _incomingItem.GetAmount() == 0)
             {
                 _incomingItem = null;
+                MarkDirtyDelayed();
+                LogUtils.LogDebug("Incoming item cleared.");
+                RequestImmediateNetworkUpdate();
                 return;
             }
         }
@@ -132,6 +138,10 @@ namespace Jazornowsky.QuantumStorage
         public bool TryDeliverItem(StorageUserInterface sourceEntity, ItemBase item, ushort cubeType, ushort cubeValue,
             bool sendImmediateNetworkUpdate)
         {
+            if (!WorldScript.mbIsServer)
+            {
+                return false;
+            }
             if (_incomingItem != null || sourceEntity == null || (item == null && cubeType == 0 && cubeValue == 0))
             {
                 return false;
@@ -159,28 +169,37 @@ namespace Jazornowsky.QuantumStorage
                 _nextInsertDirection = Direction.LEFT;
             }
             
+            SegmentEntity segment = (SegmentEntity) sourceEntity;
 
-            SegmentEntity segment = (SegmentEntity)sourceEntity;
             PositionUtils.GetSegmentPos(MachineSides.Left, mnX, mnY, mnZ, out long x, out long y, out long z);
-
             if (_nextInsertDirection == Direction.LEFT && PositionUtils.IsSegmentPositionEqual(segment, x, y, z))
             {
                 _incomingItem = item;
             }
+
             PositionUtils.GetSegmentPos(MachineSides.Right, mnX, mnY, mnZ, out x, out y, out z);
             if (_nextInsertDirection == Direction.RIGHT && PositionUtils.IsSegmentPositionEqual(segment, x, y, z))
             {
                 _incomingItem = item;
             }
+
             PositionUtils.GetSegmentPos(MachineSides.Front, mnX, mnY, mnZ, out x, out y, out z);
             if (_nextInsertDirection == Direction.FRONT && PositionUtils.IsSegmentPositionEqual(segment, x, y, z))
             {
                 _incomingItem = item;
             }
 
+            MarkDirtyDelayed();
             if (_incomingItem == null)
             {
+                LogUtils.LogDebug("Incoming item not set. NextInsertDirection = " + _nextInsertDirection);
                 return false;
+            }
+            LogUtils.LogDebug("Incoming item set.");
+
+            if (sendImmediateNetworkUpdate)
+            {
+                RequestImmediateNetworkUpdate();
             }
 
             return true;

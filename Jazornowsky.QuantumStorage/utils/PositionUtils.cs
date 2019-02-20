@@ -30,13 +30,13 @@ namespace Jazornowsky.QuantumStorage.utils
 
         public static bool IsSegmentPositionEqual(SegmentEntity segment, long tempPosX, long tempPosY, long tempPosZ)
         {
-            if (segment == null || segment.mWrapper == null)
+            if (segment == null)
             {
                 return false;
             }
-            return tempPosX == segment.mWrapper.mnX &&
-                   tempPosY == segment.mWrapper.mnY &&
-                   tempPosZ == segment.mWrapper.mnZ;
+            return tempPosX == segment.mnX &&
+                   tempPosY == segment.mnY &&
+                   tempPosZ == segment.mnZ;
         }
     }
 }
