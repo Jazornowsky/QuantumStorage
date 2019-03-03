@@ -1,0 +1,39 @@
+<MaterialEntry>
+	<Key>Jazornowsky.QuantumIoPortBlock</Key>
+	<Pages>
+		<Page>
+			<Paragraphs>
+				<Title>
+					<Text>Description</Text>
+				</Title>
+				<Icon>
+					<Name>Jazornowsky.QuantumIoPort</Name>
+					<Alignment>Center</Alignment>
+				</Icon>
+				<Paragraph>
+					<Text>
+						Provides direct access to items stored in Quantum Storage System.
+						From interface standpoint, using Quantum I/O Port doesn't differ from using Storage Hopper.
+						Quantum Storage Controller must have enough power to enable Quantum I/O Port to function.
+					</Text>
+				</Paragraph>
+			</Paragraphs>
+		</Page>
+		<Page>
+			<Paragraphs>
+				<Title>
+					<Text>Placement</Text>
+				</Title>
+				<Icon>
+					<Name>Jazornowsky.QuantumIoPort</Name>
+					<Alignment>Center</Alignment>
+				</Icon>
+				<Paragraph>
+					<Text>
+						Currently must be connected to Quantum Storage.
+					</Text>
+				</Paragraph>
+			</Paragraphs>
+		</Page>
+	</Pages>
+</MaterialEntry>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GenericAutoCrafterDataEntry xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<FriendlyName>Quantum Data Unit Assembler</FriendlyName>
+	<SpawnObject>Stamper_T1</SpawnObject>
+	<Value>Jazornowsky.QuantumDataUnitAssembler</Value>
+	
+	<PowerUsePerSecond>400</PowerUsePerSecond>  <!-- optional -->
+	<PowerTransferPerSecond>450</PowerTransferPerSecond>  <!-- optional -->
+	<MaxPowerStorage>500</MaxPowerStorage>  <!-- optional -->
+	
+	<WorkingAnimation>In</WorkingAnimation>
+	<UnloadingAnimation>Out</UnloadingAnimation>
+	<LoadingAnimation>Idle</LoadingAnimation>
+	
+	<CraftTime>15</CraftTime>  <!-- optional -->
+	<OptionalIngredients>false</OptionalIngredients>  <!-- optional -->
+	<Recipe>
+		<Key>Jazornowsky.QuantumDataUnit</Key>
+		<CraftedName>Quantum Data Unit</CraftedName>
+		<CraftedAmount>1</CraftedAmount>
+		<Costs>
+			<CraftCost>
+				<Key>OverclockedCrystalClock</Key><!-- This has to be Name, as it's an item, not a material -->
+				<Amount>10</Amount>
+			</CraftCost>
+		</Costs>
+		<Description>Assembles Quantum Data Unit from Crystal Clock.</Description>
+	</Recipe>
+</GenericAutoCrafterDataEntry>

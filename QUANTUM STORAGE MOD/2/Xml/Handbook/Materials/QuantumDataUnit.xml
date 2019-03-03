@@ -1,0 +1,21 @@
+<MaterialEntry>
+	<Key>Jazornowsky.QuantumDataUnit</Key>
+	<Pages>
+		<Page>
+			<Paragraphs>
+				<Title>
+					<Text>Description</Text>
+				</Title>
+				<Icon>
+					<Name>Jazornowsky.QuantumDataUnit</Name>
+					<Alignment>Center</Alignment>
+				</Icon>
+				<Paragraph>
+					<Text>
+						Basic element for crafting Quantum Machines.
+					</Text>
+				</Paragraph>
+			</Paragraphs>
+		</Page>
+	</Pages>
+</MaterialEntry>

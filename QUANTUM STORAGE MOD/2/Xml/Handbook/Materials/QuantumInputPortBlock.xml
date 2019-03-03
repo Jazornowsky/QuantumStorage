@@ -1,0 +1,39 @@
+<MaterialEntry>
+	<Key>Jazornowsky.QuantumInputPortBlock</Key>
+	<Pages>
+		<Page>
+			<Paragraphs>
+				<Title>
+					<Text>Description</Text>
+				</Title>
+				<Icon>
+					<Name>Jazornowsky.QuantumInputPort</Name>
+					<Alignment>Center</Alignment>
+				</Icon>
+				<Paragraph>
+					<Text>
+						This machine provides a way to insert items to Quantum Storage System (QSS).
+						Currently does not require power, but this will change in future versions.
+					</Text>
+				</Paragraph>
+			</Paragraphs>
+		</Page>
+		<Page>
+			<Paragraphs>
+				<Title>
+					<Text>Placement</Text>
+				</Title>
+				<Icon>
+					<Name>Jazornowsky.QuantumInputPort</Name>
+					<Alignment>Center</Alignment>
+				</Icon>
+				<Paragraph>
+					<Text>
+						Hole side should be connected to Quantum Storage block.
+						Incoming items can be connected to back, left and right side.
+					</Text>
+				</Paragraph>
+			</Paragraphs>
+		</Page>
+	</Pages>
+</MaterialEntry>

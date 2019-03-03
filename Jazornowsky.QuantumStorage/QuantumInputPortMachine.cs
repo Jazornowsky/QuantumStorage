@@ -46,6 +46,7 @@ namespace Jazornowsky.QuantumStorage
             if (!WorldScript.mbIsServer) {
                 return;
             }
+
             var storageController = StorageIoService.GetStorageController();
             if (storageController == null || _incomingItem == null || !storageController.IsOperating() || !storageController.IsInputEnabled())
             {
