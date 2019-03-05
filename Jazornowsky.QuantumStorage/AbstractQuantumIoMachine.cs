@@ -8,10 +8,10 @@ namespace Jazornowsky.QuantumStorage
     internal abstract class AbstractQuantumIoMachine : MachineEntity, IQuantumIo
     {
         protected readonly MachineSides MachineSides = new MachineSides();
-        protected readonly StorageIoService StorageIoService;
+        protected internal readonly StorageIoService StorageIoService;
         private bool _hooverInitialised;
         private bool _objectColorInitialised;
-        protected long[] ControllerPos = new long[3];
+        protected internal long[] ControllerPos = new long[3];
 
         protected AbstractQuantumIoMachine(MachineEntityCreationParameters parameters) : base(parameters)
         {

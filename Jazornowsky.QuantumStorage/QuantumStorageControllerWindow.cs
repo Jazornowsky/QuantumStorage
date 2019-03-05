@@ -64,9 +64,9 @@ namespace Jazornowsky.QuantumStorage
                 string.Empty, Color.white,
                 false, 10, textHeight * 4);
 
-            manager.AddButton(InputStatusButton, "Toggle item input", 10, buttonRowStart);
-            manager.AddButton(OutputStatusButton, "Toggle item output", 10, buttonRowStart + buttonHeight);
-            manager.AddButton(InputRuleAddButton, "Add input item rule", 10, buttonRowStart + buttonHeight*2);
+            manager.AddButton(InputStatusButton, "Toggle item input", 100, buttonRowStart);
+            manager.AddButton(OutputStatusButton, "Toggle item output", 100, buttonRowStart + QuantumStorageModSettings.ButtonHeight);
+            manager.AddButton(InputRuleAddButton, "Add input item rule", 100, buttonRowStart + QuantumStorageModSettings.ButtonHeight * 2);
 
             for (int i = 0; i < controller.GetItemInputRules().Count; i++)
             {

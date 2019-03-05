@@ -7,10 +7,10 @@ namespace Jazornowsky.QuantumStorage.utils
     {
         public static void LogDebug(String msg)
         {
-//            if (Debug.isDebugBuild)
-//            {
+            //if (Debug.isDebugBuild)
+            //{
                 Debug.Log(msg);
-//            }
+            //}
         }
 
         public static void LogDebug(String machineName, String msg)

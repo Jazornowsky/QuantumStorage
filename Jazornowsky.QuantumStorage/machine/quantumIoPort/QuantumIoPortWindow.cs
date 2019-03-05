@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Jazornowsky.QuantumStorage.machine.quantumIoPort;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -6,12 +7,16 @@ namespace Jazornowsky.QuantumStorage
 {
     internal class QuantumIoPortWindow : BaseMachineWindow
     {
+        private const string FindItemButton = "findItemButton";
         public const string LogName = "QuantumIoPortWindow";
         private const string StorageSizeLabel = "storageSize";
         private const string StatusLabel = "status";
         public static bool Dirty;
         public static bool NetworkRedraw;
-
+        protected internal QuantumIoPortMachine QuantumIoPort;
+        private bool ItemSearch = false;
+        private int UpdateTreshold = 5;
+        private int UpdateWindowCooldown;
         public int SlotCount;
 
         public override void SpawnWindow(SegmentEntity targetEntity)
@@ -23,63 +28,103 @@ namespace Jazornowsky.QuantumStorage
                 return;
             }
 
-            var itemWidth = 60;
-            var itemHeight = 60;
-            var textHeight = 30;
-            var itemRowStart = textHeight * 3;
+            QuantumIoPort = (QuantumIoPortMachine)targetEntity;
 
-            var items = quantumIoPort.GetController().GetItems();
-            manager.SetTitle(QuantumIoPortMachine.MachineName);
+            if (!ItemSearch) { 
+                var itemWidth = 60;
+                var itemHeight = 60;
+                var textHeight = 30;
+                var itemRowStart = textHeight * 5;
 
-            manager.AddLabel(GenericMachineManager.LabelType.OneLineFullWidth, StorageSizeLabel,
-                string.Empty, Color.white,
-                false, 10, textHeight);
+                var items = quantumIoPort.GetController().GetItems();
+                manager.SetTitle(QuantumIoPortMachine.MachineName);
 
-            manager.AddLabel(GenericMachineManager.LabelType.OneLineFullWidth, StatusLabel,
-                string.Empty, Color.white,
-                false, 10, textHeight * 2);
+                manager.AddLabel(GenericMachineManager.LabelType.OneLineFullWidth, StorageSizeLabel,
+                    string.Empty, Color.white,
+                    false, 10, textHeight);
 
-            SlotCount = 0;
-            for (var index = 0; index < items.Count(); index++)
+                manager.AddLabel(GenericMachineManager.LabelType.OneLineFullWidth, StatusLabel,
+                    string.Empty, Color.white,
+                    false, 10, textHeight * 2);
+
+                manager.AddButton(FindItemButton, "Search", 100, QuantumStorageModSettings.ButtonHeight * 3);
+
+                SlotCount = 0;
+                for (var index = 0; index < items.Count(); index++)
+                {
+                    var line = index / 5;
+                    var column = index % 5;
+                    manager.AddIcon("iconItem" + index, "empty", Color.white, column * itemWidth + 10,
+                        line * itemHeight + itemRowStart + 10);
+                    manager.AddLabel(GenericMachineManager.LabelType.OneLineHalfWidth, "labelItem" + index,
+                        string.Empty, Color.white, false, column * itemWidth + 28, line * itemHeight + itemRowStart + 17);
+                    SlotCount++;
+                }
+
+                {
+                    var line = items.Count() / 5;
+                    var column = items.Count() % 5;
+                    manager.AddIcon("iconItem" + items.Count, "empty", Color.white, column * itemWidth + 10,
+                        line * itemHeight + itemRowStart + 10);
+                    manager.AddLabel(GenericMachineManager.LabelType.OneLineHalfWidth,
+                        "labelItem" + items.Count,
+                        string.Empty, Color.white, false, column * itemWidth + 28, line * itemHeight + itemRowStart + 17);
+                }
+            } else
             {
-                var line = index / 5;
-                var column = index % 5;
-                manager.AddIcon("iconItem" + index, "empty", Color.white, column * itemWidth + 10,
-                    line * itemHeight + itemRowStart + 10);
-                manager.AddLabel(GenericMachineManager.LabelType.OneLineHalfWidth, "labelItem" + index,
-                    string.Empty, Color.white, false, column * itemWidth + 28, line * itemHeight + itemRowStart + 17);
-                SlotCount++;
+                QuantumIoPortItemSearch.SpawnWindow(this);
             }
 
-            {
-                var line = items.Count() / 5;
-                var column = items.Count() % 5;
-                manager.AddIcon("iconItem" + items.Count, "empty", Color.white, column * itemWidth + 10,
-                    line * itemHeight + itemRowStart + 10);
-                manager.AddLabel(GenericMachineManager.LabelType.OneLineHalfWidth,
-                    "labelItem" + items.Count,
-                    string.Empty, Color.white, false, column * itemWidth + 28, line * itemHeight + itemRowStart + 17);
-            }
             Dirty = true;
         }
 
         public override void UpdateMachine(SegmentEntity targetEntity)
         {
-            if (!(targetEntity is QuantumIoPortMachine quantumIoPort))
+            QuantumIoPortMachine ioPort = targetEntity as QuantumIoPortMachine;
+            if (ioPort == null)
             {
                 GenericMachinePanelScript.instance.Hide();
                 UIManager.RemoveUIRules("Machine");
                 return;
             }
 
-            if (quantumIoPort.GetController().GetItems().Count != SlotCount)
-                Redraw(targetEntity);
+            if (ItemSearch)
+            {
+                if (QuantumIoPortItemSearch.UpdateMachine((BaseMachineWindow) this))
+                {
+                    Dirty = true;
+                    return;
+                }
+            }
             else
-                WindowUpdate(quantumIoPort.GetController());
+            {
+                if (ioPort.GetController().GetItems().Count != SlotCount)
+                {
+                    Redraw(targetEntity);
+                    Dirty = true;
+                    return;
+                }
+                else
+                {
+                    WindowUpdate(ioPort.GetController());
+                }
+            }
+
+            Dirty = false;
         }
 
         private void WindowUpdate(QuantumStorageControllerMachine quantumStorageController)
         {
+            if (UpdateWindowCooldown > 0)
+            {
+                --UpdateWindowCooldown;
+                return;
+            }
+            else
+            {
+                UpdateWindowCooldown = UpdateTreshold;
+            }
+
             var items = quantumStorageController.GetItems();
 
             if (quantumStorageController.HasPower())
@@ -132,8 +177,6 @@ namespace Jazornowsky.QuantumStorage
                     manager.UpdateLabel("labelItem" + index, label, Color.white);
                 }
             }
-
-            Dirty = false;
         }
 
         public override void HandleItemDrag(string name, ItemBase draggedItem,
@@ -213,6 +256,20 @@ namespace Jazornowsky.QuantumStorage
                     }
                 }
             }
+
+            if (name == FindItemButton)
+            {
+                ItemSearch = true;
+                QuantumIoPortItemSearch.SetupUIRules();
+                Redraw(targetEntity);
+                return true;
+            }
+
+            //if (QuantumIoPortItemSearch.HandleButtonPress(this, name, out var selectedItem))
+            //{
+            //    ItemSearch = false;
+            //    manager.RedrawWindow();
+            //}
 
             return false;
         }
@@ -313,6 +370,12 @@ namespace Jazornowsky.QuantumStorage
             interfaceResponse.entity = target;
             interfaceResponse.inventory = player.mInventory;
             return interfaceResponse;
+        }
+
+        public override void OnClose(SegmentEntity targetEntity)
+        {
+            ItemSearch = false;
+            QuantumIoPortItemSearch.TerminateSearchWindow();
         }
     }
 }

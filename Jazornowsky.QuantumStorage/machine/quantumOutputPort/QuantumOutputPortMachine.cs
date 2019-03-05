@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Jazornowsky.QuantumStorage.machine.quantumOutputPort;
 using Jazornowsky.QuantumStorage.model;
 using Jazornowsky.QuantumStorage.service;
 using Jazornowsky.QuantumStorage.utils;
@@ -16,37 +17,21 @@ namespace Jazornowsky.QuantumStorage
     {
         public static readonly string MachineName = "Quantum Output Port";
 
-        public ItemBase Exemplar;
-        public bool ItemTaken; // is item taken from Quantum Storage and currently held by QuantumOutputPort
-
+        protected internal ItemBase Exemplar;
+        protected internal bool Enabled;
+        private bool ItemTaken; // is item taken from Quantum Storage and currently held by QuantumOutputPort
+        private QuantumOutputPortPopuTextManager QuantumOutputPortPopupTextManager;
 
         public QuantumOutputPortMachine(MachineEntityCreationParameters parameters) : base(parameters)
         {
             ItemTaken = false;
+            Enabled = true;
+            QuantumOutputPortPopupTextManager = new QuantumOutputPortPopuTextManager(this);
         }
 
         public override string GetPopupText()
         {
-            string txt = DisplayUtils.MachineDisplay(MachineName);
-            var quantumStorageController = StorageIoService.GetStorageController();
-            if ((ControllerPos[0] == 0 && ControllerPos[1] == 0 && ControllerPos[2] == 0) ||
-                quantumStorageController == null)
-            {
-                txt += "QUANTUM STORAGE CONTROLLER NOT FOUND.\n";
-            }
-
-            if (quantumStorageController != null && !quantumStorageController.HasPower())
-            {
-                txt += "QUANTUM STORAGE CONTROLLER HAS NO POWER.\n";
-            }
-
-            if (Input.GetButtonDown("Interact") && (UIManager.AllowInteracting))
-            {
-                UIManager.ForceNGUIUpdate = 0.1f;
-                AudioHUDManager.instance.HUDIn();
-            }
-
-            return txt;
+            return QuantumOutputPortPopupTextManager.getPopupText();
         }
 
         public bool PeekItem(StorageUserInterface sourceEntity, out ItemBase item, out ushort cubeType,
@@ -81,11 +66,14 @@ namespace Jazornowsky.QuantumStorage
             item = null;
             cubeType = 0;
             cubeValue = 0;
-            LogUtils.LogDebug("TryTakeItemQ", "TryTakeItem Start");
+
+            if (!Enabled)
+            {
+                return false;
+            }
 
             if (Exemplar == null)
             {
-                LogUtils.LogDebug("TryTakeItemQ", "Exemplar not set");
                 return false;
             }
 
@@ -113,7 +101,8 @@ namespace Jazornowsky.QuantumStorage
             var itemConsumer = StorageIoService.GetItemConsumer();
             var storageController = StorageIoService.GetStorageController();
             if (storageController == null || !storageController.IsOperating() ||
-                !storageController.IsOutputEnabled() || itemConsumer == null || Exemplar == null)
+                !storageController.IsOutputEnabled() || !Enabled ||
+                itemConsumer == null || Exemplar == null)
             {
                 return;
             }
@@ -154,6 +143,19 @@ namespace Jazornowsky.QuantumStorage
 
         public void SetExemplar(ItemBase lItem)
         {
+            if (lItem == null)
+            {
+                Exemplar = null;
+                MarkDirtyDelayed();
+                FloatingCombatTextManager.instance.QueueText(mnX, mnY, mnZ,
+                    QuantumStorageModSettings.MachinesFloatingTextScale,
+                    "Cleared!",
+                    QuantumStorageModSettings.MachinesFloatingTextColor,
+                    QuantumStorageModSettings.MachinesFloatingTextDuration,
+                    QuantumStorageModSettings.MachinesFloatingTextDistance);
+                return;
+            }
+
             if (lItem?.mType == null)
             {
                 return;
@@ -180,17 +182,12 @@ namespace Jazornowsky.QuantumStorage
 
             Exemplar = lItem;
             MarkDirtyDelayed();
-            if (Exemplar == null)
-            {
-                FloatingCombatTextManager.instance.QueueText(mnX, mnY, mnZ, 1.05f,
-                    PersistentSettings.GetString("Cleared!"), Color.cyan, 1f, 64f);
-            }
-            else
-            {
-                FloatingCombatTextManager.instance.QueueText(mnX, mnY, mnZ, 1.05f,
-                    PersistentSettings.GetString("Currently_outputting") + " " + ItemManager.GetItemName(Exemplar),
-                    Color.cyan, 1f, 64f);
-            }
+            FloatingCombatTextManager.instance.QueueText(mnX, mnY, mnZ,
+                QuantumStorageModSettings.MachinesFloatingTextScale,
+                PersistentSettings.GetString("Currently_outputting") + " " + ItemManager.GetItemName(Exemplar),
+                    QuantumStorageModSettings.MachinesFloatingTextColor,
+                    QuantumStorageModSettings.MachinesFloatingTextDuration,
+                    QuantumStorageModSettings.MachinesFloatingTextDistance);
         }
 
         public override void UnityUpdate()
@@ -211,14 +208,22 @@ namespace Jazornowsky.QuantumStorage
                 return;
             }
 
-            string meshText = "OUTPUT:\n";
-            if (Exemplar != null)
+            string meshText;
+            if (Enabled)
             {
-                meshText += "" + Exemplar.GetDisplayString();
+                meshText = "OUTPUT:\n";
+                if (Exemplar != null)
+                {
+                    meshText += "" + Exemplar.GetDisplayString();
+                }
+                else
+                {
+                    meshText += "NONE";
+                }
             }
             else
             {
-                meshText += "NONE";
+                meshText = "OFF";
             }
 
             TextMesh textMesh = mWrapper.mGameObjectList[0].gameObject.transform.Search("Storage Text")
@@ -273,6 +278,12 @@ namespace Jazornowsky.QuantumStorage
             }
 
             base.OnDelete();
+        }
+
+        public void ToggleStatus()
+        {
+            Enabled = !Enabled;
+            MarkDirtyDelayed();
         }
     }
 }
