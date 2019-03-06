@@ -9,6 +9,12 @@ namespace Jazornowsky.QuantumStorage.machine.quantumIoPort
 {
     public static class QuantumIoPortItemSearch
     {
+        private static string ItemIcon = "itemIcon";
+        private static string ItemInfoLabel = "itemInfoLabel";
+        private static string ItemCountLabel = "itemCountLabel";
+        private static string SearchCancelButton = "searchCancelButton";
+        private static string SearchTitleLabel = "searchTitleLabel";
+        private static string SearchTextLabel = "searchTextLabel";
         private static List<ItemBase> SearchResults;
         private static int Counter;
         private static string EntryString;
@@ -18,17 +24,17 @@ namespace Jazornowsky.QuantumStorage.machine.quantumIoPort
         public static void SpawnWindow(BaseMachineWindow sourcewindow)
         {
             UpdateWindowCooldown = 0;
-            sourcewindow.manager.AddButton("searchcancel", PersistentSettings.GetString("Cancel"), 100, 0);
-            sourcewindow.manager.AddBigLabel("searchtitle", PersistentSettings.GetString("Enter_Search_Term"), Color.white, 50, 40);
-            sourcewindow.manager.AddBigLabel("searchtext", "_", Color.cyan, 50, 65);
+            sourcewindow.manager.AddButton(SearchCancelButton, PersistentSettings.GetString("Cancel"), 100, 0);
+            sourcewindow.manager.AddBigLabel(SearchTitleLabel, PersistentSettings.GetString("Enter_Search_Term"), Color.white, 50, 40);
+            sourcewindow.manager.AddBigLabel(SearchTextLabel, "_", Color.cyan, 50, 65);
             if (SearchResults == null)
                 return;
             int count = SearchResults.Count;
             for (int index = 0; index < count; ++index)
             {
-                sourcewindow.manager.AddIcon("itemicon" + index, "empty", Color.white, 10, 100 + 60 * index);
-                sourcewindow.manager.AddBigLabel("iteminfo" + index, PersistentSettings.GetString("Inventory_Item"), Color.white, 60, 90 + 60 * index);
-                sourcewindow.manager.AddLabel(GenericMachineManager.LabelType.OneLineFullWidth, "itemcount" + index, String.Empty, Color.white, false, 60, 120 + 60 * index);
+                sourcewindow.manager.AddIcon(ItemIcon + index, "empty", Color.white, 10, 100 + 60 * index);
+                sourcewindow.manager.AddBigLabel(ItemInfoLabel + index, PersistentSettings.GetString("Inventory_Item"), Color.white, 60, 90 + 60 * index);
+                sourcewindow.manager.AddLabel(GenericMachineManager.LabelType.OneLineFullWidth, ItemCountLabel + index, String.Empty, Color.white, false, 60, 120 + 60 * index);
             }
         }
 
@@ -92,12 +98,12 @@ namespace Jazornowsky.QuantumStorage.machine.quantumIoPort
                         EntryString += ch;
                     }
                 }
-                sourcewindow.manager.UpdateLabel("searchtext", EntryString + (Counter % 20 <= 10 ? string.Empty : "_"), Color.cyan);
+                sourcewindow.manager.UpdateLabel(SearchTextLabel, EntryString + (Counter % 20 <= 10 ? string.Empty : "_"), Color.cyan);
                 return true;
             }
 
-            sourcewindow.manager.UpdateLabel("searchtitle", PersistentSettings.GetString("Searching_for"), Color.white);
-            sourcewindow.manager.UpdateLabel("searchtext", EntryString, Color.cyan);
+            sourcewindow.manager.UpdateLabel(SearchTitleLabel, PersistentSettings.GetString("Searching_for"), Color.white);
+            sourcewindow.manager.UpdateLabel(SearchTextLabel, EntryString, Color.cyan);
 
             if (!(sourcewindow is QuantumIoPortWindow target))
             {
@@ -126,18 +132,18 @@ namespace Jazornowsky.QuantumStorage.machine.quantumIoPort
                         .Find(x => x.Compare(searchResult));
                     int count = itemInInventory == null ? 0 : itemInInventory.GetAmount();
 
-                    sourcewindow.manager.UpdateIcon("itemicon" + index, itemIcon, Color.white);
-                    sourcewindow.manager.UpdateLabel("iteminfo" + index, itemName, Color.white);
-                    sourcewindow.manager.UpdateLabel("itemcount" + index, "Item count in storage: " + count, Color.white);
+                    sourcewindow.manager.UpdateIcon(ItemIcon + index, itemIcon, Color.white);
+                    sourcewindow.manager.UpdateLabel(ItemInfoLabel + index, itemName, Color.white);
+                    sourcewindow.manager.UpdateLabel(ItemCountLabel + index, "Item count in storage: " + count, Color.white);
                 }
                 return false;
             }
         }
 
-        public static bool HandleButtonPress(BaseMachineWindow sourcewindow, string name, out ItemBase selectedItem)
+        public static bool HandleButtonPress(BaseMachineWindow sourcewindow, string name, out ItemBase itemBase)
         {
-            selectedItem = null;
-            if (name == "searchcancel")
+            itemBase = null;
+            if (name == SearchCancelButton)
             {
                 SearchResults = null;
                 UIManager.mbEditingTextField = false;
@@ -146,18 +152,14 @@ namespace Jazornowsky.QuantumStorage.machine.quantumIoPort
                 sourcewindow.manager.RedrawWindow();
                 return true;
             }
-            if (name.Contains("itemicon"))
+            if (name.Contains(ItemIcon))
             {
-                int result = -1;
-                int.TryParse(name.Replace("itemicon", string.Empty), out result);
-                if (result > -1)
-                {
-                    selectedItem = SearchResults[result];
-                    SearchResults = null;
-                    EntryString = string.Empty;
-                    sourcewindow.manager.RedrawWindow();
-                    return true;
-                }
+                var quantumIoPortWindow = (QuantumIoPortWindow)sourcewindow;
+                int.TryParse(name.Replace(ItemIcon, string.Empty), out var itemSlot);
+                ItemBase itemInInventory = quantumIoPortWindow.QuantumIoPort.StorageIoService.GetStorageController().GetItems()
+                    .Find(x => x.Compare(SearchResults[itemSlot]));
+                itemBase = itemInInventory;
+                return true;
             }
             return false;
         }

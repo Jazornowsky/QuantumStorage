@@ -72,7 +72,6 @@ namespace Jazornowsky.QuantumStorage
             {
                 _incomingItem = null;
                 MarkDirtyDelayed();
-                LogUtils.LogDebug("Incoming item cleared.");
                 RequestImmediateNetworkUpdate();
                 return;
             }
@@ -193,10 +192,8 @@ namespace Jazornowsky.QuantumStorage
             MarkDirtyDelayed();
             if (_incomingItem == null)
             {
-                LogUtils.LogDebug("Incoming item not set. NextInsertDirection = " + _nextInsertDirection);
                 return false;
             }
-            LogUtils.LogDebug("Incoming item set.");
 
             if (sendImmediateNetworkUpdate)
             {

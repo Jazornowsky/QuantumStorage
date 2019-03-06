@@ -1,4 +1,5 @@
 ﻿using Jazornowsky.QuantumStorage.machine.quantumIoPort;
+using Jazornowsky.QuantumStorage.utils;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -237,16 +238,17 @@ namespace Jazornowsky.QuantumStorage
                 int.TryParse(name.Replace("iconItem", string.Empty), out var itemSlot);
                 if (itemSlot > -1 && itemSlot < SlotCount)
                 {
-                    var amount = 100;
-                    if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
-                        amount = 10;
-                    else if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) amount = 1;
+                    int amount = ItemUtils.GetItemAmoutToRetrieve();
 
                     var itemBase = ItemManager.CloneItem(controller.GetItem(itemSlot));
                     if (amount < ItemManager.GetCurrentStackSize(itemBase))
+                    {
                         ItemManager.SetItemCount(itemBase, amount);
+                    }
                     else
+                    {
                         amount = ItemManager.GetCurrentStackSize(itemBase);
+                    }
 
                     if (TakeItem(WorldScript.mLocalPlayer, controller, itemBase))
                     {
@@ -265,11 +267,31 @@ namespace Jazornowsky.QuantumStorage
                 return true;
             }
 
-            //if (QuantumIoPortItemSearch.HandleButtonPress(this, name, out var selectedItem))
-            //{
-            //    ItemSearch = false;
-            //    manager.RedrawWindow();
-            //}
+            if (ItemSearch && name.Contains("itemIcon"))
+            {
+                QuantumIoPortItemSearch.HandleButtonPress(this, name, out var itemBase);
+                int amount = ItemUtils.GetItemAmoutToRetrieve();
+                if (amount < ItemManager.GetCurrentStackSize(itemBase))
+                {
+                    ItemManager.SetItemCount(itemBase, amount);
+                }
+                else
+                {
+                    amount = ItemManager.GetCurrentStackSize(itemBase);
+                }
+                if (TakeItem(WorldScript.mLocalPlayer, controller, itemBase))
+                {
+                    UIManager.ForceNGUIUpdate = 0.1f;
+                    AudioHUDManager.instance.OrePickup();
+                }
+                return true;
+            }
+
+            if (QuantumIoPortItemSearch.HandleButtonPress(this, name, out var selectedItem))
+            {
+                ItemSearch = false;
+                manager.RedrawWindow();
+            }
 
             return false;
         }
